@@ -3,15 +3,17 @@ import React, { useEffect, useRef } from "react";
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import { useRecoilState } from "recoil";
 import { CameraDeviceId } from "../recoil/cameraDevice";
+import MainVideo from "./atoms/MainVideo";
+import SubVideo from "./atoms/SubVideo";
 /*
     LocalVideo
-    카메라를 선택하면 나오는 화면에 관련된 컴포넌트
-    카메라로 비춰지는 나의 모습이 나오는 컴포넌트
+    나의 카메라에 관련된 컴포넌트
 
     props1 {localMedia : ILocalMedia} // ConnectLive.createLocalMedia()을 통해 반환되는 객체의 타입
     props2 {activeCamera : boolean} // 카메라 권한이 활성화 되었는지 확인
+    prop3 {isMain : boolean } // 메인 화면인지 여부
 */
-const LocalVideo = ({ localMedia, activeCamera }: LocalVideoInterface) => {
+const LocalVideo = ({ localMedia, isMain }: LocalVideoInterface) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [cameraDeviceId] = useRecoilState(CameraDeviceId);
 
@@ -26,12 +28,31 @@ const LocalVideo = ({ localMedia, activeCamera }: LocalVideoInterface) => {
     ref.current.srcObject = localMedia.video!.getMediaStream();
   }, [ref, localMedia, cameraDeviceId]);
 
-  return <video ref={ref} autoPlay playsInline></video>;
+  return isMain ? (
+    <MainVideo
+      ref={ref}
+      width={27}
+      height={30}
+      muted
+      autoPlay
+      playsInline
+    ></MainVideo>
+  ) : (
+    <SubVideo
+      ref={ref}
+      width={10}
+      height={15}
+      muted
+      autoPlay
+      playsInline
+    ></SubVideo>
+  );
 };
 
 interface LocalVideoInterface {
   localMedia: ILocalMedia;
   activeCamera: boolean;
+  isMain: boolean;
 }
 
 export default LocalVideo;
