@@ -8,7 +8,7 @@ import ConnectLive, {
 } from "@connectlive/connectlive-web-sdk";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { boolean } from "yargs";
 import RemoteVideo from "../components/RemoteVideo";
 import { AlwaysOnAudio } from "../recoil/alwaysOnAudio";
@@ -17,11 +17,13 @@ import { AudioOccupants } from "../recoil/audioOccupants";
 import { CameraDeviceId } from "../recoil/cameraDevice";
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
 import { Conf } from "../recoil/conf";
+import { ConnectState } from "../recoil/connectState";
 import { LocalAudio } from "../recoil/localAudio";
 import { LocalScreen } from "../recoil/localScreen";
 import { LocalVideo } from "../recoil/localVideo";
 import { MicDeviceId } from "../recoil/micDevice";
 import { MicDeviceActive } from "../recoil/micDeviceActive";
+import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 
 const Room = ({ roomId }: RoomProps) => {
@@ -74,10 +76,26 @@ const Room = ({ roomId }: RoomProps) => {
 
   const setLocalScreen = useSetRecoilState(LocalScreen);
 
+  const [isConnect, setIsConnect] = useRecoilState(ConnectState);
+
+  const onDisconnect = () => {
+    setLocalAudio(null);
+    setLocalVideo(null);
+    setLocalScreen(null);
+
+    conf.disconnect();
+
+    setConf(null);
+
+    ConnectLive.signOut();
+
+    setIsConnect(false);
+    navigate("/");
+  };
+
   const init = async () => {
     try {
       const _conf: IRoom = conf!;
-      console.log(conf);
 
       let _localAudio;
       let _localVideo;
@@ -329,7 +347,7 @@ const Room = ({ roomId }: RoomProps) => {
     } else {
       navigate("/");
     }
-  }, [conf]);
+  }, [conf, isConnect]);
 
   useEffect(() => {
     (async () => {
@@ -355,17 +373,25 @@ const Room = ({ roomId }: RoomProps) => {
       setRemoteSubscribeVideos([...remoteVideos]);
     })();
   }, [remoteParticipantVideos]);
+
   return (
     <div>
-      <p> 해당 방 번호: {roomId} </p>
-      <p>연결된 분</p>
-      {remoteSubscribeVideos.map((remoteVideo, i) => {
-        return (
-          <div key={i}>
-            <RemoteVideo remoteVideo={remoteVideo} />
-          </div>
-        );
-      })}
+      {isConnect ? (
+        <div>
+          <p> 해당 방 번호: {roomId} </p>
+          <p>연결된 분</p>
+          <button onClick={() => onDisconnect()}>연결 종료</button>
+          {remoteSubscribeVideos.map((remoteVideo, i) => {
+            return (
+              <div key={i}>
+                <RemoteVideo remoteVideo={remoteVideo} />
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div></div>
+      )}
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import ConnectLive, {
@@ -7,7 +7,7 @@ import ConnectLive, {
   ILocalScreen,
 } from "@connectlive/connectlive-web-sdk";
 import CameraSelect from "../components/CameraSelect";
-import { useRecoilState, useSetRecoilState } from "recoil";
+import { SetRecoilState, useRecoilState, useSetRecoilState } from "recoil";
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
 import LocalVideo from "../components/LocalVideo";
 import MicSelect from "../components/MicSelect";
@@ -18,15 +18,16 @@ import RoomIdInput from "../components/RoomIdInput";
 import { delay } from "../utils/delay";
 import { RoomIdState } from "../recoil/roomIdState";
 import Room from "../pages/Room";
+import { ConnectState } from "../recoil/connectState";
 
 const Home = () => {
-  const [title, setTitle] = useState("로비");
-  const [complete, setComplete] = useState(false);
   const navigate = useNavigate();
   /*
    접속정보 관련 상태 변수
   */
   const [isConnecting, setIsConnecting] = useState(false);
+  const [complete, setComplete] = useRecoilState(ConnectState);
+
   const [connectingMsg, setConnectingMsg] = useState("");
   const [conf, setConf] = useRecoilState<any>(Conf);
 
@@ -49,7 +50,7 @@ const Home = () => {
       setLocalMedia(_localMedia);
       console.log(isConnecting);
     })();
-  }, []);
+  }, [complete]);
 
   /*
    * 사용자가 방에 접속할 때 호출하는 이벤트 함수
@@ -92,22 +93,21 @@ const Home = () => {
         setConnectingMsg("DownSession Succeed");
         await delay(2000);
 
-        setTitle("상담실");
+        setIsConnecting(false);
         setComplete(true);
         // '연결 중' 제한을 2초로 설정하여 해당 시간 경과 시, 연결 종료
-        setIsConnecting(false);
       }
     });
-
+    setComplete(false);
+    setIsConnecting(true);
     setConf(_conf);
     console.log("_conf", _conf);
     console.log("conf", conf);
-    setIsConnecting(true);
     await _conf.connect(roomId);
   };
   return (
     <div>
-      <div>- {title} - </div>
+      <div>- {complete ? "상담실" : "로비"} - </div>
 
       <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
       <CameraSelect localMedia={localMedia!} />
@@ -122,8 +122,8 @@ const Home = () => {
           <div>
             <button onClick={handleSubmit}>방 생성</button>
             <div>
-              <button onClick={handleSubmit}>방 입장</button>
               <RoomIdInput roomId={roomId} setRoomId={setRoomId} />
+              <button onClick={handleSubmit}>방 입장</button>
             </div>
           </div>
         )}
