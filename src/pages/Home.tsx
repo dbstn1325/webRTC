@@ -25,9 +25,12 @@ import { delay } from "../utils/delay";
 import { RoomIdState } from "../recoil/roomIdState";
 import Room from "../pages/Room";
 import { ConnectState } from "../recoil/connectState";
+import VideoContainer from "../components/atoms/VideoContainer";
 
 const Home = () => {
   const navigate = useNavigate();
+
+  const [isMyCameraCenter, setMyCameraCenter] = useState(true);
   /*
    접속정보 관련 상태 변수
   */
@@ -58,6 +61,10 @@ const Home = () => {
       setLocalMedia(_localMedia);
     })();
   }, [complete, setComplete, conf]);
+
+  const handleOnClick = () => {
+    setMyCameraCenter(!isMyCameraCenter);
+  };
 
   /*
    * 사용자가 방에 접속할 때 호출하는 이벤트 함수
@@ -114,19 +121,29 @@ const Home = () => {
   };
   return (
     <div>
-      <div> - {complete ? "상담실" : "로비"} - </div>
-
-      <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
+      <div>- {complete ? "상담실" : "로비"} - </div>
+      <button onClick={handleOnClick}>화면전환</button>
       <CameraSelect localMedia={localMedia!} />
       <MicSelect localMedia={localMedia!}></MicSelect>
       <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
+
       <div>
         {complete ? (
-          <div>
-            <Room roomId={roomId} setConnect={setComplete} />
-          </div>
+          <VideoContainer width={27}>
+            <LocalVideo
+              localMedia={localMedia!}
+              activeCamera={activeCamera}
+              isMain={!isMyCameraCenter}
+            />
+            <Room roomId={roomId} isCenter={isMyCameraCenter} />
+          </VideoContainer>
         ) : (
           <div>
+            <LocalVideo
+              localMedia={localMedia!}
+              activeCamera={activeCamera}
+              isMain={isMyCameraCenter}
+            />
             <button onClick={handleSubmit}>방 생성</button>
             <div>
               <RoomIdInput roomId={roomId} setRoomId={setRoomId} />

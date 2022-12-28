@@ -31,7 +31,7 @@ import { MicDeviceActive } from "../recoil/micDeviceActive";
 import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 
-const Room = ({ roomId, setConnect }: RoomProps) => {
+const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const navigate = useNavigate();
   /*
     원격 참여자들에 관련된 상태변수
@@ -392,7 +392,7 @@ const Room = ({ roomId, setConnect }: RoomProps) => {
           {remoteSubscribeVideos.map((remoteVideo, i) => {
             return (
               <div key={i}>
-                <RemoteVideo remoteVideo={remoteVideo} />
+                <RemoteVideo remoteVideo={remoteVideo} isMain={isCenter} />
               </div>
             );
           })}
@@ -409,6 +409,7 @@ export default Room;
 type RoomProps = {
   roomId?: string;
   setConnect?: any;
+  isCenter: boolean;
 };
 
 type audioConstraintType = {
