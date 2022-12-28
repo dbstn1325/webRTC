@@ -7,7 +7,13 @@ import ConnectLive, {
   ILocalScreen,
 } from "@connectlive/connectlive-web-sdk";
 import CameraSelect from "../components/CameraSelect";
-import { SetRecoilState, useRecoilState, useSetRecoilState } from "recoil";
+import {
+  SetRecoilState,
+  useRecoilRefresher_UNSTABLE,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
 import LocalVideo from "../components/LocalVideo";
 import MicSelect from "../components/MicSelect";
@@ -27,6 +33,7 @@ const Home = () => {
   */
   const [isConnecting, setIsConnecting] = useState(false);
   const [complete, setComplete] = useRecoilState(ConnectState);
+  const iscomplete = useRecoilValue(ConnectState);
 
   const [connectingMsg, setConnectingMsg] = useState("");
   const [conf, setConf] = useRecoilState<any>(Conf);
@@ -37,6 +44,7 @@ const Home = () => {
   const [roomId, setRoomId] = useState<string>(
     Math.random().toString(16).substring(2, 12)
   );
+
   /*
   로컬 참여자가 생성하는 로컬오디오와 로컬 비디오 처리를 위해서 LocalMedia 객체를 만든다.
   params1 {audio : true} 오디오 객체 생성
@@ -48,9 +56,8 @@ const Home = () => {
         video: true,
       });
       setLocalMedia(_localMedia);
-      console.log(isConnecting);
     })();
-  }, [complete]);
+  }, [complete, setComplete, conf]);
 
   /*
    * 사용자가 방에 접속할 때 호출하는 이벤트 함수
@@ -107,7 +114,7 @@ const Home = () => {
   };
   return (
     <div>
-      <div>- {complete ? "상담실" : "로비"} - </div>
+      <div> - {complete ? "상담실" : "로비"} - </div>
 
       <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
       <CameraSelect localMedia={localMedia!} />
@@ -116,7 +123,7 @@ const Home = () => {
       <div>
         {complete ? (
           <div>
-            <Room roomId={roomId} />
+            <Room roomId={roomId} setConnect={setComplete} />
           </div>
         ) : (
           <div>

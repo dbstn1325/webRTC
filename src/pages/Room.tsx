@@ -8,7 +8,12 @@ import ConnectLive, {
 } from "@connectlive/connectlive-web-sdk";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import {
+  useRecoilRefresher_UNSTABLE,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from "recoil";
 import { boolean } from "yargs";
 import RemoteVideo from "../components/RemoteVideo";
 import { AlwaysOnAudio } from "../recoil/alwaysOnAudio";
@@ -26,7 +31,7 @@ import { MicDeviceActive } from "../recoil/micDeviceActive";
 import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 
-const Room = ({ roomId }: RoomProps) => {
+const Room = ({ roomId, setConnect }: RoomProps) => {
   const navigate = useNavigate();
   /*
     원격 참여자들에 관련된 상태변수
@@ -77,6 +82,7 @@ const Room = ({ roomId }: RoomProps) => {
   const setLocalScreen = useSetRecoilState(LocalScreen);
 
   const [isConnect, setIsConnect] = useRecoilState(ConnectState);
+  const refresh = useRecoilRefresher_UNSTABLE(ConnectState);
 
   const onDisconnect = () => {
     setLocalAudio(null);
@@ -89,7 +95,9 @@ const Room = ({ roomId }: RoomProps) => {
 
     ConnectLive.signOut();
 
+    setConnect(false);
     setIsConnect(false);
+    refresh();
     navigate("/");
   };
 
@@ -206,6 +214,7 @@ const Room = ({ roomId }: RoomProps) => {
         참여자가 방에서 나가서 연결이 끊어졌을 때 호출하는 이벤트
       */
       _conf.on("participantLeft", (event) => {
+        setConnect(false);
         setRemoteParticipants((oldRemoteParticipants) => {
           return oldRemoteParticipants.filter(
             (participant: IRemoteParticipant) => {
@@ -272,10 +281,9 @@ const Room = ({ roomId }: RoomProps) => {
           setLocalVideo(null);
           setLocalScreen(null);
 
-          // setConf(null);
+          setConf(null);
 
           ConnectLive.signOut();
-          console.log("종료됨 ㅋㅋ");
         }
       });
 
@@ -347,7 +355,7 @@ const Room = ({ roomId }: RoomProps) => {
     } else {
       navigate("/");
     }
-  }, [conf, isConnect]);
+  }, [conf]);
 
   useEffect(() => {
     (async () => {
@@ -376,11 +384,11 @@ const Room = ({ roomId }: RoomProps) => {
 
   return (
     <div>
+      <p> 해당 방 번호: {roomId} </p>
+      <p>연결된 분</p>
+      <button onClick={() => onDisconnect()}>상담 종료</button>
       {isConnect ? (
         <div>
-          <p> 해당 방 번호: {roomId} </p>
-          <p>연결된 분</p>
-          <button onClick={() => onDisconnect()}>연결 종료</button>
           {remoteSubscribeVideos.map((remoteVideo, i) => {
             return (
               <div key={i}>
@@ -400,6 +408,7 @@ export default Room;
 
 type RoomProps = {
   roomId?: string;
+  setConnect?: any;
 };
 
 type audioConstraintType = {

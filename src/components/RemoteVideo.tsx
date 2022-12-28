@@ -1,7 +1,8 @@
 import { IRemoteVideo } from "@connectlive/connectlive-web-sdk";
 import { useEffect, useRef } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { AudioOccupants } from "../recoil/audioOccupants";
+import { ConnectState } from "../recoil/connectState";
 
 /*
     참석자의 비디오를 띄워주는 컴포넌트
@@ -9,6 +10,7 @@ import { AudioOccupants } from "../recoil/audioOccupants";
 const RemoteVideo = ({ remoteVideo }: RemoteVideoInterface) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [audioOccupants] = useRecoilState(AudioOccupants);
+  const isComplete = useRecoilValue(ConnectState);
 
   useEffect(() => {
     if (!ref.current) {
@@ -28,8 +30,14 @@ const RemoteVideo = ({ remoteVideo }: RemoteVideoInterface) => {
 
   return (
     <>
-      <div>{remoteVideo.participantId}</div>
-      <video ref={ref} muted autoPlay playsInline></video>
+      {isComplete ? (
+        <>
+          <div>{remoteVideo.participantId}</div>
+          <video ref={ref} muted autoPlay playsInline></video>
+        </>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
