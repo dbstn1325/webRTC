@@ -32,6 +32,7 @@ import Modal from "../components/molecules/modal/Modal";
 import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
+import { isAloneState } from "../recoil/isAlone";
 
 const Home = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
@@ -51,6 +52,7 @@ const Home = () => {
   const iscomplete = useRecoilValue(ConnectState);
 
   const [connectingMsg, setConnectingMsg] = useState("");
+  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
   const [conf, setConf] = useRecoilState<any>(Conf);
 
   const [localMedia, setLocalMedia] = useState<ILocalMedia>();
@@ -127,6 +129,12 @@ const Home = () => {
         // '연결 중' 제한을 2초로 설정하여 해당 시간 경과 시, 연결 종료
       }
     });
+
+    _conf.on("connected", async (event) => {
+      if (event.remoteParticipants.length > 1) {
+        setIsAlone(false);
+      }
+    });
     setComplete(false);
     setIsConnecting(true);
     setConf(_conf);
@@ -152,21 +160,13 @@ const Home = () => {
         </Modal>
       )}
       {complete ? (
-        <VideoContainer width={27}>
-          <LocalVideo
-            localMedia={localMedia!}
-            activeCamera={activeCamera}
-            isMain={!isMyCameraCenter}
-          />
+        <VideoContainer width={27} isAlone={isAlone}>
+          <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
       ) : (
         <div>
-          <LocalVideo
-            localMedia={localMedia!}
-            activeCamera={activeCamera}
-            isMain={isMyCameraCenter}
-          />
+          <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
         </div>
       )}
     </>

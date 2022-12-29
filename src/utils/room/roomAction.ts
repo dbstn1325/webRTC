@@ -5,7 +5,7 @@ import ConnectLive, {
   IRoomEventRemoteAudioPublished,
 } from "@connectlive/connectlive-web-sdk";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { LocalVideo } from "../../recoil/localVideo";
+
 import { CameraDeviceId } from "../../recoil/cameraDevice";
 import { CameraDeviceActive } from "../../recoil/cameraDeviceActive";
 import { Conf } from "../../recoil/conf";

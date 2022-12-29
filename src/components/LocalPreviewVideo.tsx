@@ -3,8 +3,7 @@ import React, { useEffect, useRef } from "react";
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import { useRecoilState } from "recoil";
 import { CameraDeviceId } from "../recoil/cameraDevice";
-import MainVideo from "./atoms/MainVideo";
-import SubVideo from "./atoms/SubVideo";
+import SubVideo from "./atoms/Video";
 import PreviewVideo from "./atoms/PreviewVideo";
 /*
     LocalVideo
@@ -32,7 +31,6 @@ const LocalPreviewVideo = ({ localMedia }: LocalVideoInterface) => {
   return (
     <PreviewVideo
       ref={ref}
-    
       height={20}
       muted
       autoPlay
