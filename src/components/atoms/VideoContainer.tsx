@@ -7,6 +7,7 @@ const VideoContainer = styled.div<VideoContainerProps>`
 
 interface VideoContainerProps {
   width: number;
+  isAlone: boolean;
 }
 
 export default VideoContainer;

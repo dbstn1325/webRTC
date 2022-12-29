@@ -32,6 +32,7 @@ import Modal from "../components/molecules/modal/Modal";
 import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
+import { isAloneState } from "../recoil/isAlone";
 
 const Loby = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
@@ -41,8 +42,9 @@ const Loby = () => {
   }, [isOpenModal]);
 
   const navigate = useNavigate();
-
+  const [participantsCount, setParticipantsCount] = useState(0);
   const [isMyCameraCenter, setMyCameraCenter] = useState(true);
+  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
   /*
    접속정보 관련 상태 변수
   */
@@ -122,9 +124,21 @@ const Loby = () => {
 
         setIsConnecting(false);
         setComplete(true);
+        setOpenModal(false);
         // '연결 중' 제한을 2초로 설정하여 해당 시간 경과 시, 연결 종료
       }
     });
+
+    _conf.on("connected", async (event) => {
+      if (event.remoteParticipants.length >= 1) {
+        setIsAlone(false);
+      }
+    });
+
+    _conf.on("participantEntered", (evt) => {
+      setIsAlone(false);
+    });
+
     setComplete(false);
     setIsConnecting(true);
     setConf(_conf);
@@ -132,6 +146,7 @@ const Loby = () => {
     console.log("conf", conf);
     await _conf.connect(roomId);
   };
+
   return (
     <>
       {isOpenModal && (
@@ -145,26 +160,18 @@ const Loby = () => {
           <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
           <RoomIdInput roomId={roomId} setRoomId={setRoomId} />
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
-            방 생성하기
+            {connectingMsg === "" ? "입장하기" : connectingMsg}
           </StyledRoomButton>
         </Modal>
       )}
       {complete ? (
-        <VideoContainer width={27}>
-          <LocalVideo
-            localMedia={localMedia!}
-            activeCamera={activeCamera}
-            isMain={!isMyCameraCenter}
-          />
+        <VideoContainer width={27} isAlone={isAlone}>
+          <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
       ) : (
         <div>
-          <LocalVideo
-            localMedia={localMedia!}
-            activeCamera={activeCamera}
-            isMain={isMyCameraCenter}
-          />
+          <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
         </div>
       )}
     </>

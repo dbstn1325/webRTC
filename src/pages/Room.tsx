@@ -15,17 +15,20 @@ import {
   useSetRecoilState,
 } from "recoil";
 import { boolean } from "yargs";
+import VideoContainer from "../components/atoms/VideoContainer";
 import RemoteVideo from "../components/RemoteVideo";
 import { AlwaysOnAudio } from "../recoil/alwaysOnAudio";
 import { AudioOccupants } from "../recoil/audioOccupants";
 
 import { CameraDeviceId } from "../recoil/cameraDevice";
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
+import { centerCameraState } from "../recoil/centerCameraState";
 import { Conf } from "../recoil/conf";
 import { ConnectState } from "../recoil/connectState";
 import { LocalAudio } from "../recoil/localAudio";
 import { LocalScreen } from "../recoil/localScreen";
-import { LocalVideo } from "../recoil/localVideo";
+import { LocalVideoState } from "../recoil/localVideo";
+
 import { MicDeviceId } from "../recoil/micDevice";
 import { MicDeviceActive } from "../recoil/micDeviceActive";
 
@@ -41,6 +44,7 @@ import handleDisconnect from "../utils/room/room_disconnect";
 
 const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const navigate = useNavigate();
+  const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
 
   /*
     원격 참여자들에 관련된 상태변수
@@ -75,7 +79,7 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
     현재 쓰고 있는 로컬오디오와 비디오
   */
   const [localAudio, setLocalAudio] = useRecoilState<any>(LocalAudio);
-  const [localVideo, setLocalVideo] = useRecoilState<any>(LocalVideo);
+  const [localVideo, setLocalVideo] = useRecoilState<any>(LocalVideoState);
 
   /*
     생성된 방의 정보를 담고 있는 conf 변수
@@ -361,7 +365,6 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
 
       console.log("실행");
       console.log("222222", conf);
-
     } else {
       navigate("/");
     }
@@ -411,15 +414,16 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
 
   return (
     <div>
-      <p> 해당 방 번호: {roomId} </p>
+      {/* <p> 해당 방 번호: {roomId} </p>
       <p>연결된 분</p>
-      <button onClick={() => handleDisconnect()}>상담 종료</button>
+      <button onClick={() => handleDisconnect()}>상담 종료</button> */}
+
       {isConnect ? (
         <div>
           {remoteSubscribeVideos.map((remoteVideo: any, i: number) => {
             return (
               <div key={i}>
-                <RemoteVideo remoteVideo={remoteVideo} isMain={isCenter} />
+                <RemoteVideo remoteVideo={remoteVideo} />
               </div>
             );
           })}
@@ -427,6 +431,14 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
       ) : (
         <div></div>
       )}
+
+      <button
+        onClick={() => {
+          setCenterCamera(!isMain);
+        }}
+      >
+        화면전환
+      </button>
     </div>
   );
 };

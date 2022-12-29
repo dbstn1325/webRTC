@@ -1,14 +1,14 @@
+import { LocalVideoState } from "./../../recoil/localVideo";
 import ConnectLive from "@connectlive/connectlive-web-sdk";
 import { useNavigate } from "react-router-dom";
 import { useRecoilState } from "recoil";
 import { Conf } from "../../recoil/conf";
 import { ConnectState } from "../../recoil/connectState";
 import { LocalAudio } from "../../recoil/localAudio";
-import { LocalVideo } from "../../recoil/localVideo";
 
 function handleDisconnect(setConnect: any) {
   const [localAudio, setLocalAudio] = useRecoilState<any>(LocalAudio);
-  const [localVideo, setLocalVideo] = useRecoilState<any>(LocalVideo);
+  const [localVideo, setLocalVideo] = useRecoilState<any>(LocalVideoState);
   const [conf, setConf] = useRecoilState<any>(Conf);
 
   const [isConnect, setIsConnect] = useRecoilState(ConnectState);
