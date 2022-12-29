@@ -33,7 +33,7 @@ import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
 
-const Home = () => {
+const Loby = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
 
   const onClickToggleModal = useCallback(() => {
@@ -135,7 +135,7 @@ const Home = () => {
   return (
     <>
       {isOpenModal && (
-        <Modal onClickToggleModal={onClickToggleModal} isHost={true}>
+        <Modal onClickToggleModal={onClickToggleModal} isHost={false}>
           <LocalPreviewVideo
             localMedia={localMedia!}
             activeCamera={activeCamera}
@@ -143,6 +143,7 @@ const Home = () => {
           <CameraSelect localMedia={localMedia!} />
           <MicSelect localMedia={localMedia!}></MicSelect>
           <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
+          <RoomIdInput roomId={roomId} setRoomId={setRoomId} />
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
             방 생성하기
           </StyledRoomButton>
@@ -170,4 +171,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Loby;
