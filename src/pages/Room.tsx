@@ -28,8 +28,12 @@ import { LocalScreen } from "../recoil/localScreen";
 import { LocalVideo } from "../recoil/localVideo";
 import { MicDeviceId } from "../recoil/micDevice";
 import { MicDeviceActive } from "../recoil/micDeviceActive";
+
+import { ParticipantsFullState } from "../recoil/participantsFull";
+
 import { RemoteParticipantsVideosState } from "../recoil/remoteParticipantVideos";
 import { RemoteSubscribeVideosState } from "../recoil/remoteSubscribeVideos";
+
 import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 import roomInit from "../utils/room/roomAction";
@@ -79,6 +83,9 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const [conf, setConf] = useRecoilState<any>(Conf);
   console.log(conf);
 
+  const [participantState, setParticipantState] = useRecoilState<boolean>(
+    ParticipantsFullState
+  );
   /*
     참여자의 송출되는 오디오(소리)에 관한 상태변수
   */
@@ -293,8 +300,7 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
       _conf.remoteParticipants.forEach((participant) => {
         // 구독하지 않은 비디오 배열 가져오기
         const unsubscribedVideos = participant.getUnsubscribedVideos();
-
-        // 구독하지 안은 비디오 아이디 추출하기
+        // 구독하지 않은 비디오 아이디 추출하기
         if (unsubscribedVideos.length) {
           const videoIds = unsubscribedVideos.map((video) =>
             video.getVideoId()
@@ -321,6 +327,7 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
           ...oldRemoteParticipants,
           participant,
         ]);
+        console.log("vivivi", participant);
       });
 
       /*
@@ -349,7 +356,12 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
 
   useEffect(() => {
     if (conf && !localAudio && !localVideo) {
+      console.log("111111", conf);
       init();
+
+      console.log("실행");
+      console.log("222222", conf);
+
     } else {
       navigate("/");
     }
@@ -377,12 +389,25 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
       );
       results.forEach((res: any) => {
         if (res.value) {
+          console.log("participantId -> ", res.value[0].participantId);
           remoteVideos = [...remoteVideos, ...res.value];
         }
+
+        if (remoteVideos.length > 1) {
+          setParticipantState(true);
+
+          return;
+        }
+        setParticipantState(false);
       });
-      setRemoteSubscribeVideos([...remoteVideos]);
+      if (participantState == true) {
+        alert("인원이 초과된 방 입니다.");
+        setConnect(false);
+        return 0;
+      }
+      return setRemoteSubscribeVideos([...remoteVideos]);
     })();
-  }, [remoteParticipantVideos]);
+  }, [remoteParticipantVideos, participantState]);
 
   return (
     <div>
