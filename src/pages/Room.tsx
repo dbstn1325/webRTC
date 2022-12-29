@@ -28,11 +28,16 @@ import { LocalScreen } from "../recoil/localScreen";
 import { LocalVideo } from "../recoil/localVideo";
 import { MicDeviceId } from "../recoil/micDevice";
 import { MicDeviceActive } from "../recoil/micDeviceActive";
+import { RemoteParticipantsVideosState } from "../recoil/remoteParticipantVideos";
+import { RemoteSubscribeVideosState } from "../recoil/remoteSubscribeVideos";
 import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
+import roomInit from "../utils/room/roomAction";
+import handleDisconnect from "../utils/room/room_disconnect";
 
 const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const navigate = useNavigate();
+
   /*
     원격 참여자들에 관련된 상태변수
   */
@@ -46,6 +51,7 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const [remoteSubscribeVideos, setRemoteSubscribeVideos] = useState<
     IRemoteVideo[]
   >([]);
+
   /*
     카메라 또는 마이크가 켜져 있는지
     확인하는 상태 변수
@@ -79,28 +85,30 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const setAudioOccupants = useSetRecoilState(AudioOccupants);
   const setAlwaysOnAudio = useSetRecoilState(AlwaysOnAudio);
 
-  const setLocalScreen = useSetRecoilState(LocalScreen);
-
   const [isConnect, setIsConnect] = useRecoilState(ConnectState);
-  const refresh = useRecoilRefresher_UNSTABLE(ConnectState);
 
-  const onDisconnect = () => {
+  /**
+   * 회의를 종료할 때, 오디오와 비디오를 모두 끄고
+   * 현재 사용자가 참여한 방에 대한 정보를 제거하는 함수
+   */
+  const handleDisconnect = () => {
     setLocalAudio(null);
     setLocalVideo(null);
-    setLocalScreen(null);
-
-    conf.disconnect();
-
     setConf(null);
+    conf.disconnect();
 
     ConnectLive.signOut();
 
     setConnect(false);
     setIsConnect(false);
-    refresh();
+
     navigate("/");
   };
 
+  /**
+   * 룸에서 일어나는 모든 상태와 이벤트에 관련된 함수
+   * 룸의 모든 이벤트를 계속 Listen
+   */
   const init = async () => {
     try {
       const _conf: IRoom = conf!;
@@ -164,9 +172,9 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
         _localVideo.video!.setExtraValue("camera");
         setLocalVideo(_localVideo);
 
-        /*
-    새로운 참가자가 들어왔을 때 이벤트
-    */
+        /**
+         * 새로운 참가자가 들어왔을 때 이벤트
+         */
         _conf.on("participantEntered", (evt) => {
           setRemoteParticipants((oldRemoteParticipants) => [
             ...oldRemoteParticipants,
@@ -191,10 +199,6 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
         호출되는 이벤트
       */
       _conf.on("remoteVideoUnpublished", (event) => {
-        /*
-            참가자 비디오 배열에서 카메라를 끈 사람을 찾아서
-            참여자를 제거한다.
-        */
         setRemoteParticipantVideos((oldRemoteParticipantVideos) => {
           return oldRemoteParticipantVideos.filter((remoteVideoId) => {
             return event.remoteVideo.videoId !== remoteVideoId;
@@ -210,9 +214,9 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
         });
       });
 
-      /*
-        참여자가 방에서 나가서 연결이 끊어졌을 때 호출하는 이벤트
-      */
+      /**
+       * 참여자가 방에서 나갔을 때 호출하는 이벤트
+       */
       _conf.on("participantLeft", (event) => {
         setConnect(false);
         setRemoteParticipants((oldRemoteParticipants) => {
@@ -273,16 +277,14 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
       });
 
       /*
-        참가자가 방을 나갔을 때 이벤트
+        내가 방을 나갔을 때 발생하는 이벤트
       */
       _conf.on("disconnected", (reason) => {
         if (reason === "destroyed" || reason === "kicked") {
           setLocalAudio(null);
           setLocalVideo(null);
-          setLocalScreen(null);
 
           setConf(null);
-
           ConnectLive.signOut();
         }
       });
@@ -345,18 +347,18 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
     }
   };
 
-  /*
-        접속정보
-    */
   useEffect(() => {
     if (conf && !localAudio && !localVideo) {
       init();
-      console.log("실행");
     } else {
       navigate("/");
     }
   }, [conf]);
 
+  /**
+   * 해당 Room 정보가 없으면 return하고, 현재 상대방의 캠들을 가져오지 않은 것들을 찾아서
+   * 캠들을 전부 들고온다
+   */
   useEffect(() => {
     (async () => {
       if (!conf) {
@@ -386,10 +388,10 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
     <div>
       <p> 해당 방 번호: {roomId} </p>
       <p>연결된 분</p>
-      <button onClick={() => onDisconnect()}>상담 종료</button>
+      <button onClick={() => handleDisconnect()}>상담 종료</button>
       {isConnect ? (
         <div>
-          {remoteSubscribeVideos.map((remoteVideo, i) => {
+          {remoteSubscribeVideos.map((remoteVideo: any, i: number) => {
             return (
               <div key={i}>
                 <RemoteVideo remoteVideo={remoteVideo} isMain={isCenter} />
@@ -404,8 +406,6 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   );
 };
 
-export default Room;
-
 type RoomProps = {
   roomId?: string;
   setConnect?: any;
@@ -419,3 +419,5 @@ type audioConstraintType = {
 type videoConstraintType = {
   video: boolean | object;
 };
+
+export default Room;

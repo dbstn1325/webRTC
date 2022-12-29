@@ -33,7 +33,7 @@ import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
 
-const Home = () => {
+const Loby = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
 
   const onClickToggleModal = useCallback(() => {
@@ -118,9 +118,7 @@ const Home = () => {
       } else if (progress <= 100) {
         console.log("DownSession succeed");
         setConnectingMsg("DownSession Succeed");
-        await delay(1000).then(() => {
-          setOpenModal(false);
-        });
+        await delay(2000);
 
         setIsConnecting(false);
         setComplete(true);
@@ -130,7 +128,6 @@ const Home = () => {
     setComplete(false);
     setIsConnecting(true);
     setConf(_conf);
-
     console.log("_conf", _conf);
     console.log("conf", conf);
     await _conf.connect(roomId);
@@ -138,7 +135,7 @@ const Home = () => {
   return (
     <>
       {isOpenModal && (
-        <Modal onClickToggleModal={onClickToggleModal} isHost={true}>
+        <Modal onClickToggleModal={onClickToggleModal} isHost={false}>
           <LocalPreviewVideo
             localMedia={localMedia!}
             activeCamera={activeCamera}
@@ -146,8 +143,9 @@ const Home = () => {
           <CameraSelect localMedia={localMedia!} />
           <MicSelect localMedia={localMedia!}></MicSelect>
           <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
+          <RoomIdInput roomId={roomId} setRoomId={setRoomId} />
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
-            {connectingMsg === "" ? "방 참가하기" : connectingMsg}
+            방 생성하기
           </StyledRoomButton>
         </Modal>
       )}
@@ -173,4 +171,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Loby;
