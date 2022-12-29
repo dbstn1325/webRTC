@@ -2,11 +2,11 @@ import styled from "styled-components";
 
 const Video = styled.video<VideoProps>`
   ${(props) => (props.isMain || props.isAlone ? "" : "position : absolute;")};
-  width: ${(props) => (props.isMain || props.isAlone ? "27rem" : "10rem")};
-  height: ${(props) => (props.isMain || props.isAlone ? "90vh" : "10rem")};
+  width: ${(props) => (props.isMain || props.isAlone ? "100%" : "20%")};
+  height: ${(props) => (props.isMain || props.isAlone ? "90vh" : "13rem")};
   border-radius: ${(props) => (props.isMain || props.isAlone ? "2%" : "10px")};
-  ${(props) => (props.isMain || props.isAlone ? "" : "right : 5px;")}
-  ${(props) => (props.isMain || props.isAlone ? "" : "bottom : 2.2rem;")}
+  ${(props) => (props.isMain || props.isAlone ? "" : "right : 1.5em;")}
+  ${(props) => (props.isMain || props.isAlone ? "" : "bottom : 4rem;")}
   object-fit: fill;
 `;
 

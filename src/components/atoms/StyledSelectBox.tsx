@@ -3,7 +3,7 @@ import styled from "styled-components";
 const StyledSelectBox = styled.select`
   width: 100%;
   height: 3rem;
-  font-family: inherit;
+  font-family: "PretendardMedium";
   font-size: 1rem;
   padding: 0 1.2rem 0 1.2rem;
   border: 1px solid #018ddc;

@@ -414,9 +414,9 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
 
   return (
     <div>
-      {/* <p> 해당 방 번호: {roomId} </p>
+      <p> 해당 방 번호: {roomId} </p>
       <p>연결된 분</p>
-      <button onClick={() => handleDisconnect()}>상담 종료</button> */}
+      <button onClick={() => handleDisconnect()}>상담 종료</button>
 
       {isConnect ? (
         <div>
