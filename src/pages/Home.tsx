@@ -118,7 +118,9 @@ const Home = () => {
       } else if (progress <= 100) {
         console.log("DownSession succeed");
         setConnectingMsg("DownSession Succeed");
-        await delay(2000);
+        await delay(1000).then(() => {
+          setOpenModal(false);
+        });
 
         setIsConnecting(false);
         setComplete(true);
@@ -128,6 +130,7 @@ const Home = () => {
     setComplete(false);
     setIsConnecting(true);
     setConf(_conf);
+
     console.log("_conf", _conf);
     console.log("conf", conf);
     await _conf.connect(roomId);
@@ -144,7 +147,7 @@ const Home = () => {
           <MicSelect localMedia={localMedia!}></MicSelect>
           <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
-            방 생성하기
+            {connectingMsg === "" ? "방 참가하기" : connectingMsg}
           </StyledRoomButton>
         </Modal>
       )}

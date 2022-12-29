@@ -3,7 +3,7 @@ import styled from "styled-components";
 const DialogBox = styled.dialog<DialogInterface>`
   position: relative;
   width: 30%;
-  height: ${(props) => (props.isHost ? "70%" : "90%")};
+  height: ${(props) => (props.isHost ? "75%" : "90%")};
   display: flex;
   flex-direction: column;
   border: none;
