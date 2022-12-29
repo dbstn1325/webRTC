@@ -33,6 +33,7 @@ import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
 import { isAloneState } from "../recoil/isAlone";
+import axios from "axios";
 
 const Home = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
@@ -87,6 +88,9 @@ const Home = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+    console.log("55555");
+    const response = await axios.get("http://localhost:8000/api/v1/room/");
+    console.log(response);
 
     let auth = {
       serviceId: "S8N34T5LI3Y6",
@@ -131,6 +135,8 @@ const Home = () => {
     });
 
     _conf.on("connected", async (event) => {
+      console.log(event.remoteParticipants);
+      console.log(event.remoteParticipants.length);
       if (event.remoteParticipants.length > 1) {
         setIsAlone(false);
       }
@@ -155,7 +161,7 @@ const Home = () => {
           <MicSelect localMedia={localMedia!}></MicSelect>
           <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
-            {connectingMsg === "" ? "방 참가하기" : connectingMsg}
+            {connectingMsg === "" ? "방 생성하기" : connectingMsg}
           </StyledRoomButton>
         </Modal>
       )}
