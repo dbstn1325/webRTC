@@ -7,6 +7,7 @@ const StyledRoomButton = styled.button<StyledRoomButtonProps>`
   border: none;
   border-radius: 13px;
   cursor: pointer;
+  font-family: "PretendardBold";
   font-size: 1.3rem;
   color: #ffffff;
 `;

@@ -33,6 +33,11 @@ import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
 import { isAloneState } from "../recoil/isAlone";
+import Container from "../components/atoms/Container";
+import TodayContainer from "../components/molecules/TodayContainer";
+import TodayInputBox from "../components/molecules/TodayInputBox";
+import TodayButtonContainer from "../components/atoms/TodayMedical/TodayButtonContainer";
+import TodayButton from "../components/atoms/TodayMedical/TodayButton";
 
 const Home = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
@@ -144,7 +149,7 @@ const Home = () => {
     await _conf.connect(roomId);
   };
   return (
-    <>
+    <Container>
       {isOpenModal && (
         <Modal onClickToggleModal={onClickToggleModal} isHost={true}>
           <LocalPreviewVideo
@@ -160,7 +165,7 @@ const Home = () => {
         </Modal>
       )}
       {complete ? (
-        <VideoContainer width={27} isAlone={isAlone}>
+        <VideoContainer isAlone={isAlone}>
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
@@ -169,7 +174,21 @@ const Home = () => {
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
         </div>
       )}
-    </>
+      <TodayContainer>
+        <TodayInputBox
+          title="방 번호"
+          height={2}
+          value={roomId}
+        ></TodayInputBox>
+        <TodayInputBox title="진료 내용" height={10}></TodayInputBox>
+        <TodayInputBox title="진료 소견" height={2}></TodayInputBox>
+        <TodayInputBox title="치료 방법" height={5}></TodayInputBox>
+        <TodayInputBox title="처방 내용" height={5}></TodayInputBox>
+        <TodayButtonContainer>
+          <TodayButton>화면 전환</TodayButton>
+        </TodayButtonContainer>
+      </TodayContainer>
+    </Container>
   );
 };
 
