@@ -8,6 +8,9 @@ import ConnectLive, {
 
 import { useSetRecoilState } from "recoil";
 import { CameraDeviceId } from "../recoil/cameraDevice";
+import SelectBoxContainer from "./molecules/SelectBoxContainer";
+import StyledSelectBox from "./atoms/StyledSelectBox";
+import SelectBoxLabel from "./atoms/SelectBoxLabel";
 
 const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
   const [localCameraDevice, setLocalCameraDevice] = useState<MediaDeviceInfo[]>(
@@ -36,8 +39,9 @@ const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
 
   if (localCameraDevice.length) {
     return (
-      <div>
-        <select onChange={handleSelect}>
+      <SelectBoxContainer>
+        <SelectBoxLabel>카메라</SelectBoxLabel>
+        <StyledSelectBox onChange={handleSelect}>
           {localCameraDevice.map((item, index) => {
             return (
               <option key={index} value={item.deviceId}>
@@ -45,8 +49,8 @@ const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
               </option>
             );
           })}
-        </select>
-      </div>
+        </StyledSelectBox>
+      </SelectBoxContainer>
     );
   } else {
     return <div>카메라 없다</div>;

@@ -2,6 +2,9 @@ import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import React, { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
+import SelectBoxLabel from "./atoms/SelectBoxLabel";
+import StyledSelectBox from "./atoms/StyledSelectBox";
+import SelectBoxContainer from "./molecules/SelectBoxContainer";
 
 const LocalSpeakerDevice = ({ localMedia }: LocalSpeakerInterface) => {
   const [localSpeakerDevice, setLocalSpeakerDevice] = useState<
@@ -28,15 +31,18 @@ const LocalSpeakerDevice = ({ localMedia }: LocalSpeakerInterface) => {
 
   if (localSpeakerDevice.length) {
     return (
-      <select onChange={handleSelect}>
-        {localSpeakerDevice.map((item, index) => {
-          return (
-            <option key={index} value={item.deviceId}>
-              {item.label}
-            </option>
-          );
-        })}
-      </select>
+      <SelectBoxContainer>
+        <SelectBoxLabel>스피커</SelectBoxLabel>
+        <StyledSelectBox onChange={handleSelect}>
+          {localSpeakerDevice.map((item, index) => {
+            return (
+              <option key={index} value={item.deviceId}>
+                {item.label}
+              </option>
+            );
+          })}
+        </StyledSelectBox>
+      </SelectBoxContainer>
     );
   }
   return <div>출력장치 없다</div>;
