@@ -2,27 +2,21 @@ import React, { useEffect, useRef } from "react";
 
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import { useRecoilState } from "recoil";
-import { CameraDeviceId } from "../recoil/cameraDevice";
-
-import SubVideo from "./atoms/Video";
-import Video from "./atoms/Video";
-import { centerCameraState } from "../recoil/centerCameraState";
-import { isOpenModalState } from "../recoil/isOpenModal";
-import { isAloneState } from "../recoil/isAlone";
+import { CameraDeviceId } from "../../../recoil/cameraDevice";
+import SubVideo from "../../atoms/video/Video";
+import PreviewVideo from "../../atoms/modal/PreviewVideo";
 /*
     LocalVideo
-    나의 카메라에 관련된 컴포넌트
+    나의 미리보기 카메라에 관련된 컴포넌트
 
     props1 {localMedia : ILocalMedia} // ConnectLive.createLocalMedia()을 통해 반환되는 객체의 타입
     props2 {activeCamera : boolean} // 카메라 권한이 활성화 되었는지 확인
     prop3 {isMain : boolean } // 메인 화면인지 여부
 */
-const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
+const LocalPreviewVideo = ({ localMedia }: LocalVideoInterface) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [cameraDeviceId] = useRecoilState(CameraDeviceId);
-  const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
-  const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
-  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
+
   useEffect(() => {
     if (!ref.current) {
       return;
@@ -35,14 +29,13 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
   }, [ref, localMedia, cameraDeviceId]);
 
   return (
-    <Video
+    <PreviewVideo
       ref={ref}
-      isMain={!isMain}
+      height={20}
       muted
       autoPlay
       playsInline
-      isAlone={isAlone}
-    ></Video>
+    ></PreviewVideo>
   );
 };
 
@@ -51,4 +44,4 @@ interface LocalVideoInterface {
   activeCamera: boolean;
 }
 
-export default LocalVideo;
+export default LocalPreviewVideo;

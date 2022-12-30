@@ -1,53 +1,42 @@
-import React, { SetStateAction, useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useCallback, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useRecoilState, useRecoilValue } from "recoil";
 
-import ConnectLive, {
-  IRoom,
-  ILocalMedia,
-  ILocalScreen,
-} from "@connectlive/connectlive-web-sdk";
-import CameraSelect from "../components/CameraSelect";
-import {
-  SetRecoilState,
-  useRecoilRefresher_UNSTABLE,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
+import ConnectLive, { ILocalMedia } from "@connectlive/connectlive-web-sdk";
+
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
-import LocalVideo from "../components/LocalVideo";
-import MicSelect from "../components/MicSelect";
-import SpeakerSelect from "../components/SpeakerSelect";
+import LocalVideo from "../components/molecules/video/LocalVideo";
 import { Conf } from "../recoil/conf";
 import RoomIdInput from "../components/RoomIdInput";
-
 import { delay } from "../utils/delay";
-import { RoomIdState } from "../recoil/roomIdState";
 import Room from "../pages/Room";
 import { ConnectState } from "../recoil/connectState";
-import VideoContainer from "../components/atoms/VideoContainer";
-import StyledRoomButton from "../components/atoms/RoomButton";
+import VideoContainer from "../components/atoms/video/VideoContainer";
+import StyledRoomButton from "../components/atoms/modal/RoomButton";
 import { isOpenModalState } from "../recoil/isOpenModal";
 import Modal from "../components/molecules/modal/Modal";
-import PreviewVideo from "../components/atoms/PreviewVideo";
-import LocalPreviewVideo from "../components/LocalPreviewVideo";
-import StyledSelectBox from "../components/atoms/StyledSelectBox";
+import LocalPreviewVideo from "../components/molecules/modal/LocalPreviewVideo";
 import { isAloneState } from "../recoil/isAlone";
 import Container from "../components/atoms/Container";
-import TodayContainer from "../components/molecules/TodayContainer";
-import TodayInputBox from "../components/molecules/TodayInputBox";
+import TodayContainer from "../components/molecules/today/TodayContainer";
+import TodayInputBox from "../components/molecules/today/TodayInputBox";
 import TodayButtonContainer from "../components/atoms/TodayMedical/TodayButtonContainer";
 import TodayButton from "../components/atoms/TodayMedical/TodayButton";
+import { centerCameraState } from "../recoil/centerCameraState";
+import { LocalAudio } from "../recoil/localAudio";
+import DeviceSelect from "../components/organisms/DeviceSelect";
 
-const Loby = () => {
+const Lobby = () => {
+  const location = useLocation();
+  /**
+   * 카메라 화면 전환에 곤련된 변수
+   */
+  const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
+
+  // 모달창 Open과 Close
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
 
-  const onClickToggleModal = useCallback(() => {
-    setOpenModal(!isOpenModal);
-  }, [isOpenModal]);
-
   const navigate = useNavigate();
-  const [participantsCount, setParticipantsCount] = useState(0);
   const [isMyCameraCenter, setMyCameraCenter] = useState(true);
   const [isAlone, setIsAlone] = useRecoilState(isAloneState);
   /*
@@ -55,7 +44,6 @@ const Loby = () => {
   */
   const [isConnecting, setIsConnecting] = useState(false);
   const [complete, setComplete] = useRecoilState(ConnectState);
-  const iscomplete = useRecoilValue(ConnectState);
 
   const [connectingMsg, setConnectingMsg] = useState("");
   const [conf, setConf] = useRecoilState<any>(Conf);
@@ -63,9 +51,25 @@ const Loby = () => {
   const [localMedia, setLocalMedia] = useState<ILocalMedia>();
   const [activeCamera, setActiveCamera] = useRecoilState(CameraDeviceActive);
 
+  /*
+    현재 쓰고 있는 로컬오디오와 비디오
+  */
+  const [localAudio, setLocalAudio] = useRecoilState<any>(LocalAudio);
+  const [isConnect, setIsConnect] = useRecoilState(ConnectState);
+
+  /** */
   const [roomId, setRoomId] = useState<string>(
     Math.random().toString(16).substring(2, 12)
   );
+
+  useEffect(() => {
+    if (location.pathname === "/host") {
+      const isHost = true;
+      return;
+    }
+
+    const isHost = false;
+  }, [location]);
 
   /*
   로컬 참여자가 생성하는 로컬오디오와 로컬 비디오 처리를 위해서 LocalMedia 객체를 만든다.
@@ -82,14 +86,23 @@ const Loby = () => {
     })();
   }, [complete, setComplete, conf]);
 
-  const handleOnClick = () => {
-    setMyCameraCenter(!isMyCameraCenter);
+  /**
+   * 메인 카메라 전환하는 메소드
+   */
+  const handleChangeCam = () => {
+    setCenterCamera(!isMain);
   };
+
+  /**
+   * 모달 On/OFF
+   */
+  const onClickToggleModal = useCallback(() => {
+    setOpenModal(!isOpenModal);
+  }, [isOpenModal]);
 
   /*
    * 사용자가 방에 접속할 때 호출하는 이벤트 함수
    */
-
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
@@ -108,23 +121,18 @@ const Loby = () => {
     const _conf = ConnectLive.createRoom();
 
     /*
-    진행 과정을 계산하고, 해당 접속 정보를 통해
+    방 생성 진행 과정을 계산하고, 해당 접속 정보를 통해
     Room에 연결을 한다.
     */
-
     _conf.on("connecting", async (event) => {
-      console.log(_conf);
       const progress = Math.floor(event.progress);
-      console.log(progress);
+
       if (progress <= 33) {
-        console.log("Room connected");
-        setConnectingMsg("Room Connected");
+        setConnectingMsg("방 찾기 완료");
       } else if (progress <= 66) {
-        console.log("UpSession Succeed");
-        setConnectingMsg("UpSession Succeed");
+        setConnectingMsg("방 정보 불러오는 중..");
       } else if (progress <= 100) {
-        console.log("DownSession succeed");
-        setConnectingMsg("DownSession Succeed");
+        setConnectingMsg("방 정보 불러오기 완료");
         await delay(2000);
 
         setIsConnecting(false);
@@ -134,11 +142,21 @@ const Loby = () => {
       }
     });
 
+    /**
+     * 정상적으로 방에 접속 했을 때 이벤트
+     * 방에 접속 해있는 참여자들의 수를 개수해서
+     * 방에 나 혼자 있는지, 다른 사람들이 같이 있는지 계산
+     */
     _conf.on("connected", async (event) => {
       if (event.remoteParticipants.length >= 1) {
         setIsAlone(false);
       }
     });
+
+    /**
+     * 다른 참여자가 방에 들어왔을 때 발생하는 이벤트
+     * 혼자 있는지 확인하는 변수 SetIsAlone을 False
+     */
 
     _conf.on("participantEntered", (evt) => {
       setIsAlone(false);
@@ -147,9 +165,25 @@ const Loby = () => {
     setComplete(false);
     setIsConnecting(true);
     setConf(_conf);
-    console.log("_conf", _conf);
-    console.log("conf", conf);
+
     await _conf.connect(roomId);
+  };
+
+  /**
+   * 접속을 끊었을 때, 오디오를 끄고
+   * 다시 방 입장 모달창이 띄워진다.
+   */
+  const handleDisconnect = () => {
+    setLocalAudio(null);
+    setConf(null);
+    setIsConnect(false);
+    conf.disconnect();
+
+    ConnectLive.signOut();
+
+    navigate("/");
+    setConnectingMsg("입장하기");
+    setOpenModal(true);
   };
 
   return (
@@ -160,9 +194,7 @@ const Loby = () => {
             localMedia={localMedia!}
             activeCamera={activeCamera}
           ></LocalPreviewVideo>
-          <CameraSelect localMedia={localMedia!} />
-          <MicSelect localMedia={localMedia!}></MicSelect>
-          <SpeakerSelect localMedia={localMedia!}></SpeakerSelect>
+          <DeviceSelect localMedia={localMedia!} />
           <RoomIdInput roomId={roomId} setRoomId={setRoomId} />
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
             {connectingMsg === "" ? "입장하기" : connectingMsg}
@@ -175,9 +207,7 @@ const Loby = () => {
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
       ) : (
-        <div>
-          <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
-        </div>
+        <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
       )}
       <TodayContainer>
         <TodayInputBox
@@ -190,11 +220,24 @@ const Loby = () => {
         <TodayInputBox title="치료 방법" height={5}></TodayInputBox>
         <TodayInputBox title="처방 내용" height={5}></TodayInputBox>
         <TodayButtonContainer>
-          <TodayButton>화면 전환</TodayButton>
+          <TodayButton
+            onClick={() => {
+              handleChangeCam();
+            }}
+          >
+            화면 전환
+          </TodayButton>
+          <TodayButton
+            onClick={() => {
+              handleDisconnect();
+            }}
+          >
+            상담 종료
+          </TodayButton>
         </TodayButtonContainer>
       </TodayContainer>
     </Container>
   );
 };
 
-export default Loby;
+export default Lobby;

@@ -7,8 +7,10 @@ const TodayButton = styled.button`
   border-radius: 10px;
   border: none;
   font-family: "PretendardMedium";
+  margin-right: 15px;
   color: white;
   font-size: 0.9rem;
+  cursor: pointer;
 `;
 
 export default TodayButton;

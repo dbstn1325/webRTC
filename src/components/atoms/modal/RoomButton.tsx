@@ -1,5 +1,8 @@
 import styled from "styled-components";
 
+/**
+ * 모달 창에서 입장하기 부분관련
+ */
 const StyledRoomButton = styled.button<StyledRoomButtonProps>`
   width: 100%;
   height: ${(props) => props.height}rem;

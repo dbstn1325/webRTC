@@ -1,11 +1,14 @@
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import React, { useEffect, useState } from "react";
 import { useSetRecoilState } from "recoil";
-import { SpeakerDeviceId } from "../recoil/speakerDevice";
-import SelectBoxLabel from "./atoms/SelectBoxLabel";
-import StyledSelectBox from "./atoms/StyledSelectBox";
-import SelectBoxContainer from "./molecules/SelectBoxContainer";
+import { SpeakerDeviceId } from "../../../recoil/speakerDevice";
+import SelectBoxLabel from "../../atoms/modal/SelectBoxLabel";
+import StyledSelectBox from "../../atoms/modal/StyledSelectBox";
+import SelectBoxContainer from "../../atoms/modal/SelectBoxContainer";
 
+/**
+ * 사용자의 스피커를 선택할 수 있는 컴포넌트
+ */
 const LocalSpeakerDevice = ({ localMedia }: LocalSpeakerInterface) => {
   const [localSpeakerDevice, setLocalSpeakerDevice] = useState<
     MediaDeviceInfo[]
@@ -45,7 +48,14 @@ const LocalSpeakerDevice = ({ localMedia }: LocalSpeakerInterface) => {
       </SelectBoxContainer>
     );
   }
-  return <div>출력장치 없다</div>;
+  return (
+    <SelectBoxContainer>
+      <SelectBoxLabel>스피커</SelectBoxLabel>
+      <StyledSelectBox onChange={handleSelect}>
+        <option>출력장치를 찾을 수 없음.</option>
+      </StyledSelectBox>
+    </SelectBoxContainer>
+  );
 };
 
 interface LocalSpeakerInterface {
