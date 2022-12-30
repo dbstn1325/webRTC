@@ -6,7 +6,7 @@ const VideoContainer = styled.div<VideoContainerProps>`
 `;
 
 interface VideoContainerProps {
-  isAlone: boolean;
+  isRoomFull: boolean;
 }
 
 export default VideoContainer;

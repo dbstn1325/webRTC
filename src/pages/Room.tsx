@@ -351,11 +351,7 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
 
   useEffect(() => {
     if (conf && !localAudio && !localVideo) {
-      console.log("111111", conf);
       init();
-
-      console.log("실행");
-      console.log("222222", conf);
     } else {
       navigate("/");
     }
@@ -381,24 +377,25 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
       const results = await Promise.allSettled(
         remoteParticipantVideos.map((videoId: any) => conf.subscribe([videoId]))
       );
+
       results.forEach((res: any) => {
         if (res.value) {
-          console.log("participantId -> ", res.value[0].participantId);
+          // console.log("participantId -> ", res.value[0].participantId);
           remoteVideos = [...remoteVideos, ...res.value];
         }
 
-        if (remoteVideos.length > 1) {
-          setParticipantState(true);
+        // if (remoteVideos.length > 1) {
+        //   setParticipantState(true);
 
-          return;
-        }
-        setParticipantState(false);
+        //   return;
+        // }
+        // setParticipantState(false);
       });
-      if (participantState == true) {
-        alert("인원이 초과된 방 입니다.");
-        setConnect(false);
-        return 0;
-      }
+      // if (participantState == true) {
+      //   alert("인원이 초과된 방 입니다.");
+      //   setConnect(false);
+      //   return 0;
+      // }
       return setRemoteSubscribeVideos([...remoteVideos]);
     })();
   }, [remoteParticipantVideos, participantState]);

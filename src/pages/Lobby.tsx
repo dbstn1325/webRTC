@@ -15,8 +15,9 @@ import VideoContainer from "../components/atoms/video/VideoContainer";
 import StyledRoomButton from "../components/atoms/modal/RoomButton";
 import { isOpenModalState } from "../recoil/isOpenModal";
 import Modal from "../components/molecules/modal/Modal";
-import LocalPreviewVideo from "../components/molecules/modal/LocalPreviewVideo";
-import { isAloneState } from "../recoil/isAlone";
+
+import { isRoomFullState } from "../recoil/isRoomFullState";
+
 import Container from "../components/atoms/Container";
 import TodayContainer from "../components/molecules/today/TodayContainer";
 import TodayInputBox from "../components/molecules/today/TodayInputBox";
@@ -25,6 +26,7 @@ import TodayButton from "../components/atoms/TodayMedical/TodayButton";
 import { centerCameraState } from "../recoil/centerCameraState";
 import { LocalAudio } from "../recoil/localAudio";
 import DeviceSelect from "../components/organisms/DeviceSelect";
+import LocalPreviewVideo from "../components/molecules/modal/LocalPreviewVideo";
 
 const Lobby = () => {
   const location = useLocation();
@@ -38,7 +40,7 @@ const Lobby = () => {
 
   const navigate = useNavigate();
   const [isMyCameraCenter, setMyCameraCenter] = useState(true);
-  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
+  const [isRoomFull, setIsRoomFull] = useRecoilState(isRoomFullState);
   /*
    접속정보 관련 상태 변수
   */
@@ -61,14 +63,15 @@ const Lobby = () => {
   const [roomId, setRoomId] = useState<string>(
     Math.random().toString(16).substring(2, 12)
   );
+  const [isHost, setIsHost] = useState(false);
 
   useEffect(() => {
     if (location.pathname === "/host") {
-      const isHost = true;
+      setIsHost(true);
       return;
     }
 
-    const isHost = false;
+    setIsHost(false);
   }, [location]);
 
   /*
@@ -105,6 +108,10 @@ const Lobby = () => {
    */
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+
+    if (isRoomFull) {
+      return alert("인원 초과된 방입니다.");
+    }
 
     let auth = {
       serviceId: "S8N34T5LI3Y6",
@@ -149,17 +156,17 @@ const Lobby = () => {
      */
     _conf.on("connected", async (event) => {
       if (event.remoteParticipants.length >= 1) {
-        setIsAlone(false);
+        setIsRoomFull(true);
       }
     });
 
     /**
      * 다른 참여자가 방에 들어왔을 때 발생하는 이벤트
-     * 혼자 있는지 확인하는 변수 SetIsAlone을 False
+     * 혼자 있는지 확인하는 변수 setIsRoomFull을 False
      */
 
     _conf.on("participantEntered", (evt) => {
-      setIsAlone(false);
+      setIsRoomFull(true);
     });
 
     setComplete(false);
@@ -195,14 +202,14 @@ const Lobby = () => {
             activeCamera={activeCamera}
           ></LocalPreviewVideo>
           <DeviceSelect localMedia={localMedia!} />
-          <RoomIdInput roomId={roomId} setRoomId={setRoomId} />
+          {isHost && <RoomIdInput roomId={roomId} setRoomId={setRoomId} />}
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
             {connectingMsg === "" ? "입장하기" : connectingMsg}
           </StyledRoomButton>
         </Modal>
       )}
       {complete ? (
-        <VideoContainer isAlone={isAlone}>
+        <VideoContainer isRoomFull={isRoomFull}>
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>

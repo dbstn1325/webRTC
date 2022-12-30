@@ -3,11 +3,11 @@ import React, { useEffect, useRef } from "react";
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import { useRecoilState } from "recoil";
 import { CameraDeviceId } from "../../../recoil/cameraDevice";
-
-import Video from "../../atoms/video/Video";
 import { centerCameraState } from "../../../recoil/centerCameraState";
 import { isOpenModalState } from "../../../recoil/isOpenModal";
-import { isAloneState } from "../../../recoil/isAlone";
+import { isRoomFullState } from "../../../recoil/isRoomFullState";
+import Video from "../../atoms/Video";
+
 /*
     LocalVideo
     나의 카메라에 관련된 컴포넌트
@@ -20,7 +20,10 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [cameraDeviceId] = useRecoilState(CameraDeviceId);
   const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
-  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
+
+  const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
+  const [isRoomFull, setIsRoomFull] = useRecoilState(isRoomFullState);
+
   useEffect(() => {
     if (!ref.current) {
       return;
@@ -39,7 +42,7 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
       muted
       autoPlay
       playsInline
-      isAlone={isAlone}
+      isRoomFull={isRoomFull}
     ></Video>
   );
 };
