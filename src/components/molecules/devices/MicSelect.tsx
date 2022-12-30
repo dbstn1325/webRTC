@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import { useSetRecoilState } from "recoil";
-import { MicDeviceId } from "../recoil/micDevice";
-import SelectBoxContainer from "./molecules/SelectBoxContainer";
-import SelectBoxLabel from "./atoms/SelectBoxLabel";
-import StyledSelectBox from "./atoms/StyledSelectBox";
+import { MicDeviceId } from "../../../recoil/micDevice";
+import SelectBoxContainer from "../../atoms/modal/SelectBoxContainer";
+import SelectBoxLabel from "../../atoms/modal/SelectBoxLabel";
+import StyledSelectBox from "../../atoms/modal/StyledSelectBox";
 
 /*
 마이크를 선택할 수 있는 Select Box가 뜨는 컴포넌트
@@ -49,7 +49,12 @@ const LocalMicDevice = ({ localMedia }: LocalMicInterface) => {
       </SelectBoxContainer>
     );
   }
-  return <div>마이크 없다</div>;
+  return (
+    <SelectBoxContainer>
+      <SelectBoxLabel>마이크</SelectBoxLabel>
+      <option> 마이크를 찾을 수 없음</option>
+    </SelectBoxContainer>
+  );
 };
 
 interface LocalMicInterface {

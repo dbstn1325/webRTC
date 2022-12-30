@@ -2,13 +2,12 @@ import React, { useEffect, useRef } from "react";
 
 import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 import { useRecoilState } from "recoil";
-import { CameraDeviceId } from "../recoil/cameraDevice";
+import { CameraDeviceId } from "../../../recoil/cameraDevice";
+import { centerCameraState } from "../../../recoil/centerCameraState";
+import { isOpenModalState } from "../../../recoil/isOpenModal";
+import { isRoomFullState } from "../../../recoil/isRoomFullState";
+import Video from "../../atoms/Video";
 
-import SubVideo from "./atoms/Video";
-import Video from "./atoms/Video";
-import { centerCameraState } from "../recoil/centerCameraState";
-import { isOpenModalState } from "../recoil/isOpenModal";
-import { isRoomFullState } from "../recoil/isRoomFullState";
 /*
     LocalVideo
     나의 카메라에 관련된 컴포넌트
@@ -21,8 +20,10 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [cameraDeviceId] = useRecoilState(CameraDeviceId);
   const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
+
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
-  const [isRoomFull, setisRoomFull] = useRecoilState(isRoomFullState);
+  const [isRoomFull, setIsRoomFull] = useRecoilState(isRoomFullState);
+
   useEffect(() => {
     if (!ref.current) {
       return;

@@ -1,32 +1,22 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useRecoilState, useSetRecoilState } from "recoil";
+
 import ConnectLive, {
-  ILocalVideo,
   IRemoteParticipant,
   IRemoteVideo,
   IRoom,
   IRoomEventRemoteAudioPublished,
-  IRoomEventRemoteVideoPublished,
 } from "@connectlive/connectlive-web-sdk";
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  useRecoilRefresher_UNSTABLE,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from "recoil";
-import { boolean } from "yargs";
-import VideoContainer from "../components/atoms/VideoContainer";
-import RemoteVideo from "../components/RemoteVideo";
+
 import { AlwaysOnAudio } from "../recoil/alwaysOnAudio";
 import { AudioOccupants } from "../recoil/audioOccupants";
-
 import { CameraDeviceId } from "../recoil/cameraDevice";
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
 import { centerCameraState } from "../recoil/centerCameraState";
 import { Conf } from "../recoil/conf";
 import { ConnectState } from "../recoil/connectState";
 import { LocalAudio } from "../recoil/localAudio";
-import { LocalScreen } from "../recoil/localScreen";
 import { LocalVideoState } from "../recoil/localVideo";
 
 import { MicDeviceId } from "../recoil/micDevice";
@@ -41,6 +31,7 @@ import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 import roomInit from "../utils/room/roomAction";
 import handleDisconnect from "../utils/room/room_disconnect";
+import RemoteVideo from "../components/molecules/video/RemoteVideo";
 
 const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const navigate = useNavigate();
@@ -411,10 +402,6 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
 
   return (
     <div>
-      <p> 해당 방 번호: {roomId} </p>
-      <p>연결된 분</p>
-      <button onClick={() => handleDisconnect()}>상담 종료</button>
-
       {isConnect ? (
         <div>
           {remoteSubscribeVideos.map((remoteVideo: any, i: number) => {
@@ -428,14 +415,6 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
       ) : (
         <div></div>
       )}
-
-      <button
-        onClick={() => {
-          setCenterCamera(!isMain);
-        }}
-      >
-        화면전환
-      </button>
     </div>
   );
 };

@@ -1,7 +1,6 @@
-import React from "react";
-import TodayInput from "../atoms/TodayMedical/TodayInput";
-import TodayInputContianer from "../atoms/TodayMedical/TodayInputContainer";
-import TodayInputLabel from "../atoms/TodayMedical/TodayInputLabel";
+import TodayInput from "../../atoms/TodayMedical/TodayInput";
+import TodayInputContianer from "../../atoms/TodayMedical/TodayInputContainer";
+import TodayInputLabel from "../../atoms/TodayMedical/TodayInputLabel";
 
 const TodayInputBox = ({ title, height, value }: TodayInputBox) => {
   return (
