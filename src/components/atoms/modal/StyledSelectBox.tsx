@@ -1,5 +1,8 @@
 import styled from "styled-components";
 
+/**
+ * 카메라, 마이크 선택에 관한 SelectBox 컴포넌트
+ */
 const StyledSelectBox = styled.select`
   width: 100%;
   height: 3rem;

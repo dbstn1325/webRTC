@@ -1,5 +1,9 @@
 import styled from "styled-components";
 
+/**
+ * 페이지 전체를 둘러싸는 컨테이너
+ * 페이지의 전체 패딩과 레이아웃을 담당
+ */
 const Container = styled.div`
   box-sizing: border-box;
   display: grid;

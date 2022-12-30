@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 
-import ConnectLive, {
-  IRoom,
-  ILocalMedia,
-  ILocalScreen,
-} from "@connectlive/connectlive-web-sdk";
+import { ILocalMedia } from "@connectlive/connectlive-web-sdk";
 
 import { useSetRecoilState } from "recoil";
-import { CameraDeviceId } from "../recoil/cameraDevice";
-import SelectBoxContainer from "./molecules/SelectBoxContainer";
-import StyledSelectBox from "./atoms/StyledSelectBox";
-import SelectBoxLabel from "./atoms/SelectBoxLabel";
+import { CameraDeviceId } from "../../../recoil/cameraDevice";
+import SelectBoxContainer from "../../atoms/modal/SelectBoxContainer";
+import StyledSelectBox from "../../atoms/modal/StyledSelectBox";
+import SelectBoxLabel from "../../atoms/modal/SelectBoxLabel";
 
+/**
+ * 카메라 선택을 하는 컴포넌트
+ */
 const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
   const [localCameraDevice, setLocalCameraDevice] = useState<MediaDeviceInfo[]>(
     []
@@ -28,6 +27,7 @@ const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
     });
   };
 
+  // 사용자의 카메라를 들고온다
   useEffect(() => {
     (async () => {
       if (localMedia) {
@@ -37,6 +37,9 @@ const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
     })();
   }, [localMedia]);
 
+  /**
+   * 사용자의 카메라가 정상적으로 있을 때 컴포넌트
+   */
   if (localCameraDevice.length) {
     return (
       <SelectBoxContainer>
@@ -52,8 +55,18 @@ const LocalCameraDevice = ({ localMedia }: LocalMediaInterface) => {
         </StyledSelectBox>
       </SelectBoxContainer>
     );
+    /**
+     * 사용자의 카메라가 없을 때 컴포넌트
+     */
   } else {
-    return <div>카메라 없다</div>;
+    return (
+      <SelectBoxContainer>
+        <SelectBoxLabel>카메라</SelectBoxLabel>
+        <StyledSelectBox onChange={handleSelect}>
+          <option>카메라를 찾을 수 없음</option>
+        </StyledSelectBox>
+      </SelectBoxContainer>
+    );
   }
 };
 

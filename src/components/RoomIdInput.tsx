@@ -1,7 +1,7 @@
 import React from "react";
-import SelectBoxLabel from "./atoms/SelectBoxLabel";
-import StyledRoomInput from "./atoms/StyledRoomInput";
-import SelectBoxContainer from "./molecules/SelectBoxContainer";
+import SelectBoxLabel from "./atoms/modal/SelectBoxLabel";
+import StyledRoomInput from "./atoms/modal/StyledRoomInput";
+import SelectBoxContainer from "./atoms/modal/SelectBoxContainer";
 
 const RoomIdInput = ({ roomId, setRoomId }: RoomIdInterface) => {
   return (

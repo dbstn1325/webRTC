@@ -11,6 +11,7 @@ const TodayInput = styled.input<TodayInputType>`
   font-size: 1.2rem;
   color: black;
   padding-left: 10px;
+  z-index: 1000000;
 `;
 
 interface TodayInputType {
