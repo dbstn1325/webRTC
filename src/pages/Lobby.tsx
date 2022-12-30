@@ -32,7 +32,12 @@ import Modal from "../components/molecules/modal/Modal";
 import PreviewVideo from "../components/atoms/PreviewVideo";
 import LocalPreviewVideo from "../components/LocalPreviewVideo";
 import StyledSelectBox from "../components/atoms/StyledSelectBox";
-import { isAloneState } from "../recoil/isAlone";
+import { isRoomFullState } from "../recoil/isRoomFullState";
+import Container from "../components/atoms/Container";
+import TodayContainer from "../components/molecules/TodayContainer";
+import TodayInputBox from "../components/molecules/TodayInputBox";
+import TodayButtonContainer from "../components/atoms/TodayMedical/TodayButtonContainer";
+import TodayButton from "../components/atoms/TodayMedical/TodayButton";
 
 const Loby = () => {
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
@@ -44,7 +49,7 @@ const Loby = () => {
   const navigate = useNavigate();
   const [participantsCount, setParticipantsCount] = useState(0);
   const [isMyCameraCenter, setMyCameraCenter] = useState(true);
-  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
+  const [isRoomFull, setisRoomFull] = useRecoilState(isRoomFullState);
   /*
    접속정보 관련 상태 변수
   */
@@ -87,6 +92,10 @@ const Loby = () => {
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
+
+    if (isRoomFull) {
+      return alert("인원 초과된 방입니다.");
+    }
 
     let auth = {
       serviceId: "S8N34T5LI3Y6",
@@ -131,12 +140,12 @@ const Loby = () => {
 
     _conf.on("connected", async (event) => {
       if (event.remoteParticipants.length >= 1) {
-        setIsAlone(false);
+        setisRoomFull(true);
       }
     });
 
     _conf.on("participantEntered", (evt) => {
-      setIsAlone(false);
+      setisRoomFull(true);
     });
 
     setComplete(false);
@@ -148,7 +157,7 @@ const Loby = () => {
   };
 
   return (
-    <>
+    <Container>
       {isOpenModal && (
         <Modal onClickToggleModal={onClickToggleModal} isHost={false}>
           <LocalPreviewVideo
@@ -165,7 +174,7 @@ const Loby = () => {
         </Modal>
       )}
       {complete ? (
-        <VideoContainer width={27} isAlone={isAlone}>
+        <VideoContainer isRoomFull={isRoomFull}>
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
@@ -174,7 +183,21 @@ const Loby = () => {
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
         </div>
       )}
-    </>
+      <TodayContainer>
+        <TodayInputBox
+          title="방 번호"
+          height={2}
+          value={roomId}
+        ></TodayInputBox>
+        <TodayInputBox title="진료 내용" height={10}></TodayInputBox>
+        <TodayInputBox title="진료 소견" height={2}></TodayInputBox>
+        <TodayInputBox title="치료 방법" height={5}></TodayInputBox>
+        <TodayInputBox title="처방 내용" height={5}></TodayInputBox>
+        <TodayButtonContainer>
+          <TodayButton>화면 전환</TodayButton>
+        </TodayButtonContainer>
+      </TodayContainer>
+    </Container>
   );
 };
 

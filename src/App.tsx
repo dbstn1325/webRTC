@@ -6,17 +6,19 @@ import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
 import NotFound from "./pages/NotFound";
 import Room from "./pages/Room";
+import { GlobalStyle } from "./styles/global/GlobalStyle";
 
 function App() {
   return (
     <RecoilRoot>
+      <GlobalStyle />
       <Reset />
       <BrowserRouter basename="/">
         <Routes>
-          <Route path="/host" element={<Home />} />
           <Route path="/" element={<Lobby />} />
+          <Route path="/host" element={<Lobby />} />
 
-          <Route path="*" element={<NotFound />} />
+          {/* <Route path="*" element={<NotFound />} /> */}
         </Routes>
       </BrowserRouter>
     </RecoilRoot>

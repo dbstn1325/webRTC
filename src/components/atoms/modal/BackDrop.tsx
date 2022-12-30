@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const Backdrop = styled.div`
-  width: 100vw;
+  width: 110vw;
   height: 100vh;
   position: fixed;
   top: 0;

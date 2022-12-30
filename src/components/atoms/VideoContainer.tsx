@@ -2,12 +2,11 @@ import styled from "styled-components";
 
 const VideoContainer = styled.div<VideoContainerProps>`
   position: relative;
-  width: ${(props) => props.width}rem;
+  width: 100%;
 `;
 
 interface VideoContainerProps {
-  width: number;
-  isAlone: boolean;
+  isRoomFull: boolean;
 }
 
 export default VideoContainer;

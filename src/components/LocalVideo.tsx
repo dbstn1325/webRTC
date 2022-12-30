@@ -8,7 +8,7 @@ import SubVideo from "./atoms/Video";
 import Video from "./atoms/Video";
 import { centerCameraState } from "../recoil/centerCameraState";
 import { isOpenModalState } from "../recoil/isOpenModal";
-import { isAloneState } from "../recoil/isAlone";
+import { isRoomFullState } from "../recoil/isRoomFullState";
 /*
     LocalVideo
     나의 카메라에 관련된 컴포넌트
@@ -22,7 +22,7 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
   const [cameraDeviceId] = useRecoilState(CameraDeviceId);
   const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
   const [isOpenModal, setOpenModal] = useRecoilState(isOpenModalState);
-  const [isAlone, setIsAlone] = useRecoilState(isAloneState);
+  const [isRoomFull, setisRoomFull] = useRecoilState(isRoomFullState);
   useEffect(() => {
     if (!ref.current) {
       return;
@@ -41,7 +41,7 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
       muted
       autoPlay
       playsInline
-      isAlone={isAlone}
+      isRoomFull={isRoomFull}
     ></Video>
   );
 };
