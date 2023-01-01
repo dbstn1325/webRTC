@@ -91,8 +91,6 @@ const Lobby = () => {
   );
 
   useEffect(() => {
-
-
     if (location.pathname === "/host") {
       setIsHost(true);
       setConnectingMsg("방 생성하기");
@@ -101,7 +99,7 @@ const Lobby = () => {
 
     setConnectingMsg("방 입장하기");
     setIsHost(false);
-  }, [location]);
+  }, []);
 
   /*
   로컬 참여자가 생성하는 로컬오디오와 로컬 비디오 처리를 위해서 LocalMedia 객체를 만든다.
@@ -117,7 +115,7 @@ const Lobby = () => {
       setLocalMedia(_localMedia);
     })();
   }, [complete, setComplete, conf]);
-
+  console.log();
   /**
    * 메인 카메라 전환하는 메소드
    */
@@ -303,7 +301,7 @@ const Lobby = () => {
         </Modal>
       )}
       {complete ? (
-        <VideoContainer>
+        <VideoContainer isRoomFull={roomParticipatans.isFull}>
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
