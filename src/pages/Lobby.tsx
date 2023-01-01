@@ -38,7 +38,6 @@ import { MicDeviceActive } from "../recoil/micDeviceActive";
 import microphoneOnOff from "../utils/mic_on_off";
 import cameraOnOff from "../utils/camera_on_off";
 
-
 const Lobby = () => {
   const location = useLocation();
 
@@ -91,16 +90,12 @@ const Lobby = () => {
     RoomParticipantsState
   );
 
-
-
   useEffect(() => {
+    // TODO : 변수명 바꾸기
     setRoomParticipatans((a: any) => ({
       ...a,
     }));
 
-    if (!roomParticipatans.isFull) {
-      setIsRoomFull(false);
-    }
     if (location.pathname === "/host") {
       setIsHost(true);
       setConnectingMsg("방 생성하기");
@@ -109,7 +104,7 @@ const Lobby = () => {
 
     setConnectingMsg("방 입장하기");
     setIsHost(false);
-  }, [location, isRoomFull]);
+  }, [location]);
 
   /*
   로컬 참여자가 생성하는 로컬오디오와 로컬 비디오 처리를 위해서 LocalMedia 객체를 만든다.
@@ -250,7 +245,6 @@ const Lobby = () => {
     await _conf.connect(roomId);
   };
 
-
   /**
    * 접속을 끊었을 때, 오디오를 끄고
    * 다시 방 입장 모달창이 띄워진다.
@@ -282,13 +276,13 @@ const Lobby = () => {
   return (
     <Container>
       {isOpenModal && (
-        <Modal onClickToggleModal={onClickToggleModal} isHost={false}>
+        <Modal onClickToggleModal={onClickToggleModal} isHost={isHost}>
           <LocalPreviewVideo
             localMedia={localMedia!}
             activeCamera={activeCamera}
           ></LocalPreviewVideo>
           <DeviceSelect localMedia={localMedia!} />
-          {isHost && <RoomIdInput roomId={roomId} setRoomId={setRoomId} />}
+          {!isHost && <RoomIdInput roomId={roomId} setRoomId={setRoomId} />}
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
             {connectingMsg}
           </StyledRoomButton>
@@ -307,7 +301,6 @@ const Lobby = () => {
           title="방 번호"
           height={2}
           value={roomId}
-
         ></TodayInputBox>
         <TodayInputBox title="진료 내용" height={10}></TodayInputBox>
         <TodayInputBox title="진료 소견" height={2}></TodayInputBox>
