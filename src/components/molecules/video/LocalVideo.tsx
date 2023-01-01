@@ -40,7 +40,7 @@ const LocalVideo = ({ localMedia, activeCamera }: LocalVideoInterface) => {
       isActive={activeCamera}
       isLocal={true}
       ref={ref}
-      isMain={!isMain}
+      isMain={isMain}
       muted
       autoPlay
       playsInline

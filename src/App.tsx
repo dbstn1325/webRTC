@@ -15,8 +15,8 @@ function App() {
       <Reset />
       <BrowserRouter basename="/">
         <Routes>
-          <Route path="/" element={<Lobby />} />
           <Route path="/host" element={<Lobby />} />
+          <Route path="/" element={<Lobby />} />
         </Routes>
       </BrowserRouter>
     </RecoilRoot>
