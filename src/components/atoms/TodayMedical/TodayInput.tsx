@@ -7,8 +7,8 @@ const TodayInput = styled.input<TodayInputType>`
   border-radius: 6px;
   width: 100%;
   height: ${(props) => props.height}rem;
-  font-family: "PretendardMedium";
-  font-size: 1.2rem;
+  font-family: "PretendardLight";
+  font-size: 1rem;
   color: black;
   padding-left: 10px;
   z-index: 1000000;

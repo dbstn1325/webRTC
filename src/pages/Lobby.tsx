@@ -30,12 +30,23 @@ import { centerCameraState } from "../recoil/centerCameraState";
 import { LocalAudio } from "../recoil/localAudio";
 import DeviceSelect from "../components/organisms/DeviceSelect";
 import LocalPreviewVideo from "../components/molecules/modal/LocalPreviewVideo";
+
 import { ParticipantState } from "../recoil/participants";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 import { RoomParticipantsState } from "../recoil/roomParticipants";
+import { MicDeviceActive } from "../recoil/micDeviceActive";
+import microphoneOnOff from "../utils/mic_on_off";
+import cameraOnOff from "../utils/camera_on_off";
+
 
 const Lobby = () => {
   const location = useLocation();
+
+  /**
+   * 마이크/카메라 활성화 여부와 관련된 상태변수
+   */
+  const [activeMic, setActiveMic] = useRecoilState(MicDeviceActive);
+  const [activeCamera, setActiveCamera] = useRecoilState(CameraDeviceActive);
   /**
    * 카메라 화면 전환에 곤련된 변수
    */
@@ -53,11 +64,16 @@ const Lobby = () => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [complete, setComplete] = useRecoilState(ConnectState);
 
+  /**
+   * 접속 시 메세지를 담고 있는 변수
+   */
   const [connectingMsg, setConnectingMsg] = useState("");
   const [conf, setConf] = useRecoilState<any>(Conf);
 
+  /**
+   * 나의 카메라를 담고 있는 상태변수
+   */
   const [localMedia, setLocalMedia] = useState<ILocalMedia>();
-  const [activeCamera, setActiveCamera] = useRecoilState(CameraDeviceActive);
 
   /*
     현재 쓰고 있는 로컬오디오와 비디오
@@ -85,9 +101,11 @@ const Lobby = () => {
     }
     if (location.pathname === "/host") {
       setIsHost(true);
+      setConnectingMsg("방 생성하기");
       return;
     }
 
+    setConnectingMsg("방 입장하기");
     setIsHost(false);
   }, [location, isRoomFull]);
 
@@ -247,6 +265,17 @@ const Lobby = () => {
     setOpenModal(true);
   };
 
+  /**
+   * 마이크 ON/OFF 함수
+   */
+  const handleOnMicActive = () => {
+    microphoneOnOff(setActiveMic, activeMic);
+  };
+
+  const handleOnCameraActive = () => {
+    cameraOnOff(setActiveCamera, activeCamera);
+  };
+
   return (
     <Container>
       {isOpenModal && (
@@ -258,7 +287,7 @@ const Lobby = () => {
           <DeviceSelect localMedia={localMedia!} />
           {isHost && <RoomIdInput roomId={roomId} setRoomId={setRoomId} />}
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
-            {connectingMsg === "" ? "입장하기" : connectingMsg}
+            {connectingMsg}
           </StyledRoomButton>
         </Modal>
       )}
@@ -294,6 +323,20 @@ const Lobby = () => {
             }}
           >
             상담 종료
+          </TodayButton>
+          <TodayButton
+            onClick={() => {
+              handleOnMicActive();
+            }}
+          >
+            {activeMic ? "마이크 끄기" : "마이크 켜기"}
+          </TodayButton>
+          <TodayButton
+            onClick={() => {
+              handleOnCameraActive();
+            }}
+          >
+            {activeCamera ? "카메라 끄기" : "카메라 켜기"}
           </TodayButton>
         </TodayButtonContainer>
       </TodayContainer>

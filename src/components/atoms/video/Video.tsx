@@ -17,6 +17,8 @@ const Video = styled.video<VideoProps>`
   ${(props) => (props.isMain || !props.isRoomFull ? "" : "right : 1.1em;")}
   ${(props) => (props.isMain || !props.isRoomFull ? "" : "bottom : 1rem;")}
   object-fit: fill;
+  visibility: ${(props) =>
+    props.isActive === false && props.isLocal === true ? "hidden" : "visible"};
 `;
 
 /**
@@ -25,6 +27,8 @@ const Video = styled.video<VideoProps>`
 interface VideoProps {
   isMain: boolean;
   isRoomFull: boolean;
+  isActive?: boolean;
+  isLocal?: boolean;
 }
 
 export default Video;
