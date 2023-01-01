@@ -91,6 +91,8 @@ const Lobby = () => {
     RoomParticipantsState
   );
 
+
+
   useEffect(() => {
     setRoomParticipatans((a: any) => ({
       ...a,
@@ -248,6 +250,7 @@ const Lobby = () => {
     await _conf.connect(roomId);
   };
 
+
   /**
    * 접속을 끊었을 때, 오디오를 끄고
    * 다시 방 입장 모달창이 띄워진다.
@@ -304,6 +307,7 @@ const Lobby = () => {
           title="방 번호"
           height={2}
           value={roomId}
+
         ></TodayInputBox>
         <TodayInputBox title="진료 내용" height={10}></TodayInputBox>
         <TodayInputBox title="진료 소견" height={2}></TodayInputBox>
