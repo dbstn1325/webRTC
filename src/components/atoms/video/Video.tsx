@@ -9,14 +9,16 @@ import styled from "styled-components";
  */
 const Video = styled.video<VideoProps>`
   ${(props) =>
-    props.isMain || props.isRoomFull ? "" : "position : absolute;"};
-  width: ${(props) => (props.isMain || props.isRoomFull ? "100%" : "33%")};
-  height: ${(props) => (props.isMain || props.isRoomFull ? "95vh" : "15rem")};
+    props.isMain || !props.isRoomFull ? "" : "position : absolute;"};
+  width: ${(props) => (props.isMain || !props.isRoomFull ? "100%" : "33%")};
+  height: ${(props) => (props.isMain || !props.isRoomFull ? "95vh" : "15rem")};
   border-radius: ${(props) =>
-    props.isMain || props.isRoomFull ? "2%" : "10px"};
-  ${(props) => (props.isMain || props.isRoomFull ? "" : "right : 1.1em;")}
-  ${(props) => (props.isMain || props.isRoomFull ? "" : "bottom : 1rem;")}
+    props.isMain || !props.isRoomFull ? "2%" : "10px"};
+  ${(props) => (props.isMain || !props.isRoomFull ? "" : "right : 1.1em;")}
+  ${(props) => (props.isMain || !props.isRoomFull ? "" : "bottom : 1rem;")}
   object-fit: fill;
+  visibility: ${(props) =>
+    props.isActive === false && props.isLocal === true ? "hidden" : "visible"};
 `;
 
 /**
@@ -25,6 +27,8 @@ const Video = styled.video<VideoProps>`
 interface VideoProps {
   isMain: boolean;
   isRoomFull: boolean;
+  isActive?: boolean;
+  isLocal?: boolean;
 }
 
 export default Video;

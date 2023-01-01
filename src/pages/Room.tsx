@@ -29,8 +29,6 @@ import { RemoteSubscribeVideosState } from "../recoil/remoteSubscribeVideos";
 
 import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
-import roomInit from "../utils/room/roomAction";
-import handleDisconnect from "../utils/room/room_disconnect";
 import RemoteVideo from "../components/molecules/video/RemoteVideo";
 
 const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {

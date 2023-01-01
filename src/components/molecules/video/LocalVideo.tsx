@@ -6,7 +6,7 @@ import { CameraDeviceId } from "../../../recoil/cameraDevice";
 import { centerCameraState } from "../../../recoil/centerCameraState";
 import { isOpenModalState } from "../../../recoil/isOpenModal";
 import { isRoomFullState } from "../../../recoil/isRoomFullState";
-import Video from "../../atoms/Video";
+import Video from "../../atoms/video/Video";
 
 /*
     LocalVideo
@@ -16,7 +16,7 @@ import Video from "../../atoms/Video";
     props2 {activeCamera : boolean} // 카메라 권한이 활성화 되었는지 확인
     prop3 {isMain : boolean } // 메인 화면인지 여부
 */
-const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
+const LocalVideo = ({ localMedia, activeCamera }: LocalVideoInterface) => {
   const ref = useRef<HTMLVideoElement>(null);
   const [cameraDeviceId] = useRecoilState(CameraDeviceId);
   const [isMain, setCenterCamera] = useRecoilState(centerCameraState);
@@ -37,6 +37,8 @@ const LocalVideo = ({ localMedia }: LocalVideoInterface) => {
 
   return (
     <Video
+      isActive={activeCamera}
+      isLocal={true}
       ref={ref}
       isMain={!isMain}
       muted
