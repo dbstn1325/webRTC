@@ -91,13 +91,10 @@ const Lobby = () => {
   );
 
   useEffect(() => {
-    setRoomParticipatans((a: any) => ({
-      ...a,
-    }));
+    // setRoomParticipatans((a: any) => ({
+    //   ...a,
+    // }));
 
-    if (!roomParticipatans.isFull) {
-      setIsRoomFull(false);
-    }
     if (location.pathname === "/host") {
       setIsHost(true);
       setConnectingMsg("방 생성하기");
@@ -106,7 +103,7 @@ const Lobby = () => {
 
     setConnectingMsg("방 입장하기");
     setIsHost(false);
-  }, [location, isRoomFull]);
+  }, [location]);
 
   /*
   로컬 참여자가 생성하는 로컬오디오와 로컬 비디오 처리를 위해서 LocalMedia 객체를 만든다.
@@ -141,21 +138,41 @@ const Lobby = () => {
    * 사용자가 방에 접속할 때 호출하는 이벤트 함수
    */
   const handleSubmit = async (event: any) => {
-    console.log("zzzzz", roomId);
-    event.preventDefault();
-    console.log(roomParticipatans.roomId);
-    console.log(roomId);
-    console.log(roomParticipatans.roomId === roomId);
-    console.log(roomParticipatans.isFull);
-    console.log(roomParticipatans.roomId === roomId && isRoomFull === true);
-    if (
-      roomParticipatans.roomId === roomId &&
-      roomParticipatans.isFull === true
-    ) {
-      alert("인원 초과된 방입니다.");
-      return;
-    }
+    const recoil_data = JSON.parse(
+      window.localStorage.getItem("recoil-persist") as string
+    );
 
+    event.preventDefault();
+    if (recoil_data) {
+      /*
+        접속하는 방이 인원 초과된 방 (1:1 방이 아닐) 경우 실행된다
+          local Storage 에 저장된 방 번호와 새로 잡은 방 번호와 일치 하는지,
+          현재 그 방이 차있는지 유무
+      */
+      if (
+        roomParticipatans.roomId === roomId &&
+        recoil_data.RoomParticipantsState.isFull === true
+      ) {
+        alert("인원 초과된 방입니다.");
+        return;
+      }
+
+      /*
+        새로운 방을 만들 경우 실행된다
+      */
+      console.log("aaa", recoil_data.RoomParticipantsState.isFull);
+      if (
+        roomId !== "" ||
+        (roomId !== recoil_data.RoomParticipantsState.roomId &&
+          recoil_data.RoomParticipantsState.isFull === true)
+      ) {
+        // setIsRoomFull(false);
+        setRoomParticipatans((a: any) => ({
+          roomId: roomId,
+          isFull: false,
+        }));
+      }
+    }
     let auth = {
       serviceId: "S8N34T5LI3Y6",
       serviceSecret: "S8N34T5LI3Y6G0KA:oMOoOnozLdA8pNs3",
@@ -186,10 +203,11 @@ const Lobby = () => {
         setConnectingMsg("방 정보 불러오기 완료");
         await delay(2000);
 
+        /* '연결 중' 제한을 2초로 설정하여 해당 시간 경과 시, 연결 종료한다
+         */
         setIsConnecting(false);
         setComplete(true);
         setOpenModal(false);
-        // '연결 중' 제한을 2초로 설정하여 해당 시간 경과 시, 연결 종료
       }
     });
 
@@ -202,6 +220,12 @@ const Lobby = () => {
       console.log("qqqqq", event.remoteParticipants.length);
 
       console.log(roomId);
+      setRoomParticipatans((a: any) => ({
+        ...a,
+        roomId: roomId,
+        // isFull: isRoomFull,
+        isFull: false,
+      }));
 
       if (event.remoteParticipants.length >= 1) {
         setRoomParticipatans((a: any) => ({
@@ -209,19 +233,14 @@ const Lobby = () => {
           roomId: roomId,
           isFull: true,
         }));
-        console.log(isRoomFull);
-        setIsRoomFull(true);
-        console.log(isRoomFull);
+
+        // setIsRoomFull(true);
       }
-      console.log("aaaaaa", isRoomFull);
-      setRoomParticipatans((a: any) => ({
-        ...a,
-        roomId: roomId,
-        isFull: isRoomFull,
-      }));
+      // console.log("aaaaaa", isRoomFull);
+
       console.log("===", roomParticipatans.roomId);
 
-      console.log(isRoomFull);
+      // console.log(isRoomFull);
     });
 
     /**
@@ -229,16 +248,6 @@ const Lobby = () => {
      * 혼자 있는지 확인하는 변수 setIsRoomFull을 False
      */
 
-    // _conf.on("participantEntered", (evt) => {
-    //   console.log("==1", remoteParticipants);
-    //   setRemoteParticipants((oldRemoteParticipants) => [
-    //     ...oldRemoteParticipants,
-    //     evt.remoteParticipant,
-    //   ]);
-    //   console.log("==2", remoteParticipants);
-    // });
-
-    console.log("-----------", isRoomFull);
     console.log(_conf);
     setComplete(false);
     setIsConnecting(true);
@@ -257,8 +266,13 @@ const Lobby = () => {
     setIsConnect(false);
     conf.disconnect();
 
+    setRoomParticipatans((a: any) => ({
+      ...a,
+      roomId: roomId,
+      isFull: false,
+    }));
+
     ConnectLive.signOut();
-    window.localStorage.removeItem("isRoomFullState");
     navigate("/");
     setConnectingMsg("입장하기");
     setOpenModal(true);
@@ -291,7 +305,7 @@ const Lobby = () => {
         </Modal>
       )}
       {complete ? (
-        <VideoContainer isRoomFull={isRoomFull}>
+        <VideoContainer>
           <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
           <Room roomId={roomId} isCenter={isMyCameraCenter} />
         </VideoContainer>
