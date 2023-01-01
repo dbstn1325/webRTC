@@ -7,9 +7,9 @@ const TodayInputBox = ({ title, height, value }: TodayInputBox) => {
     try {
       await navigator.clipboard.writeText(text);
 
-      alert("복사 성공!");
+      // alert("복사 성공!");
     } catch (error) {
-      alert("복사 실패!");
+      // alert("복사 실패!");
     }
   };
   return (
