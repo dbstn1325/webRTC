@@ -91,9 +91,7 @@ const Lobby = () => {
   );
 
   useEffect(() => {
-    // setRoomParticipatans((a: any) => ({
-    //   ...a,
-    // }));
+
 
     if (location.pathname === "/host") {
       setIsHost(true);
@@ -292,13 +290,13 @@ const Lobby = () => {
   return (
     <Container>
       {isOpenModal && (
-        <Modal onClickToggleModal={onClickToggleModal} isHost={false}>
+        <Modal onClickToggleModal={onClickToggleModal} isHost={isHost}>
           <LocalPreviewVideo
             localMedia={localMedia!}
             activeCamera={activeCamera}
           ></LocalPreviewVideo>
           <DeviceSelect localMedia={localMedia!} />
-          {isHost && <RoomIdInput roomId={roomId} setRoomId={setRoomId} />}
+          {!isHost && <RoomIdInput roomId={roomId} setRoomId={setRoomId} />}
           <StyledRoomButton width={20} height={4} onClick={handleSubmit}>
             {connectingMsg}
           </StyledRoomButton>

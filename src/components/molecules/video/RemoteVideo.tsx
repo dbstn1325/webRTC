@@ -33,7 +33,7 @@ const RemoteVideo = ({ remoteVideo }: RemoteVideoInterface) => {
     <Video
       isRoomFull={isRoomFull}
       ref={ref}
-      isMain={isMain}
+      isMain={!isMain}
       muted
       autoPlay
       playsInline

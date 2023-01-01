@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const VideoContainer = styled.div<VideoContainerProps>`
-  position: relative;
+  ${(props) => (props.isRoomFull ? "position : relative;" : "")}
   width: 100%;
 `;
 
