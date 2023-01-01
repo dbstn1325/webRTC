@@ -30,6 +30,7 @@ import { RemoteSubscribeVideosState } from "../recoil/remoteSubscribeVideos";
 import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 import RemoteVideo from "../components/molecules/video/RemoteVideo";
+import { ParticipantState } from "../recoil/participants";
 
 const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const navigate = useNavigate();
@@ -39,12 +40,14 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
     원격 참여자들에 관련된 상태변수
   */
 
-  const [remoteParticipants, setRemoteParticipants] = useState<
-    IRemoteParticipant[]
-  >([]);
+  // const [remoteParticipants, setRemoteParticipants] = useState<
+  //   IRemoteParticipant[]
+  // >([]);
   const [remoteParticipantVideos, setRemoteParticipantVideos] = useState<
     IRemoteVideo[]
   >([]);
+  const [remoteParticipants, setRemoteParticipants] =
+    useRecoilState<IRemoteParticipant[]>(ParticipantState);
   const [remoteSubscribeVideos, setRemoteSubscribeVideos] = useState<
     IRemoteVideo[]
   >([]);
@@ -176,10 +179,12 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
          * 새로운 참가자가 들어왔을 때 이벤트
          */
         _conf.on("participantEntered", (evt) => {
+          console.log("-=-=");
           setRemoteParticipants((oldRemoteParticipants) => [
             ...oldRemoteParticipants,
             evt.remoteParticipant,
           ]);
+          console.log("hoho", remoteParticipants);
         });
       }
 
@@ -320,7 +325,7 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
           ...oldRemoteParticipants,
           participant,
         ]);
-        console.log("vivivi", participant);
+        console.log("vivivi", remoteParticipants);
       });
 
       /*

@@ -2,7 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useRecoilState, useRecoilValue } from "recoil";
 
-import ConnectLive, { ILocalMedia } from "@connectlive/connectlive-web-sdk";
+import ConnectLive, {
+  ILocalMedia,
+  IRemoteParticipant,
+} from "@connectlive/connectlive-web-sdk";
 
 import { CameraDeviceActive } from "../recoil/cameraDeviceActive";
 import LocalVideo from "../components/molecules/video/LocalVideo";
@@ -27,9 +30,14 @@ import { centerCameraState } from "../recoil/centerCameraState";
 import { LocalAudio } from "../recoil/localAudio";
 import DeviceSelect from "../components/organisms/DeviceSelect";
 import LocalPreviewVideo from "../components/molecules/modal/LocalPreviewVideo";
+
+import { ParticipantState } from "../recoil/participants";
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
+import { RoomParticipantsState } from "../recoil/roomParticipants";
 import { MicDeviceActive } from "../recoil/micDeviceActive";
 import microphoneOnOff from "../utils/mic_on_off";
 import cameraOnOff from "../utils/camera_on_off";
+
 
 const Lobby = () => {
   const location = useLocation();
@@ -79,7 +87,18 @@ const Lobby = () => {
   );
   const [isHost, setIsHost] = useState(false);
 
+  const [roomParticipatans, setRoomParticipatans] = useRecoilState<any>(
+    RoomParticipantsState
+  );
+
   useEffect(() => {
+    setRoomParticipatans((a: any) => ({
+      ...a,
+    }));
+
+    if (!roomParticipatans.isFull) {
+      setIsRoomFull(false);
+    }
     if (location.pathname === "/host") {
       setIsHost(true);
       setConnectingMsg("방 생성하기");
@@ -88,7 +107,7 @@ const Lobby = () => {
 
     setConnectingMsg("방 입장하기");
     setIsHost(false);
-  }, [location]);
+  }, [location, isRoomFull]);
 
   /*
   로컬 참여자가 생성하는 로컬오디오와 로컬 비디오 처리를 위해서 LocalMedia 객체를 만든다.
@@ -123,10 +142,19 @@ const Lobby = () => {
    * 사용자가 방에 접속할 때 호출하는 이벤트 함수
    */
   const handleSubmit = async (event: any) => {
+    console.log("zzzzz", roomId);
     event.preventDefault();
-
-    if (isRoomFull) {
-      return alert("인원 초과된 방입니다.");
+    console.log(roomParticipatans.roomId);
+    console.log(roomId);
+    console.log(roomParticipatans.roomId === roomId);
+    console.log(roomParticipatans.isFull);
+    console.log(roomParticipatans.roomId === roomId && isRoomFull === true);
+    if (
+      roomParticipatans.roomId === roomId &&
+      roomParticipatans.isFull === true
+    ) {
+      alert("인원 초과된 방입니다.");
+      return;
     }
 
     let auth = {
@@ -147,6 +175,7 @@ const Lobby = () => {
     방 생성 진행 과정을 계산하고, 해당 접속 정보를 통해
     Room에 연결을 한다.
     */
+    console.log("-----", _conf.remoteParticipants);
     _conf.on("connecting", async (event) => {
       const progress = Math.floor(event.progress);
 
@@ -171,9 +200,29 @@ const Lobby = () => {
      * 방에 나 혼자 있는지, 다른 사람들이 같이 있는지 계산
      */
     _conf.on("connected", async (event) => {
+      console.log("qqqqq", event.remoteParticipants.length);
+
+      console.log(roomId);
+
       if (event.remoteParticipants.length >= 1) {
+        setRoomParticipatans((a: any) => ({
+          ...a,
+          roomId: roomId,
+          isFull: true,
+        }));
+        console.log(isRoomFull);
         setIsRoomFull(true);
+        console.log(isRoomFull);
       }
+      console.log("aaaaaa", isRoomFull);
+      setRoomParticipatans((a: any) => ({
+        ...a,
+        roomId: roomId,
+        isFull: isRoomFull,
+      }));
+      console.log("===", roomParticipatans.roomId);
+
+      console.log(isRoomFull);
     });
 
     /**
@@ -181,10 +230,17 @@ const Lobby = () => {
      * 혼자 있는지 확인하는 변수 setIsRoomFull을 False
      */
 
-    _conf.on("participantEntered", (evt) => {
-      setIsRoomFull(true);
-    });
+    // _conf.on("participantEntered", (evt) => {
+    //   console.log("==1", remoteParticipants);
+    //   setRemoteParticipants((oldRemoteParticipants) => [
+    //     ...oldRemoteParticipants,
+    //     evt.remoteParticipant,
+    //   ]);
+    //   console.log("==2", remoteParticipants);
+    // });
 
+    console.log("-----------", isRoomFull);
+    console.log(_conf);
     setComplete(false);
     setIsConnecting(true);
     setConf(_conf);
@@ -203,7 +259,7 @@ const Lobby = () => {
     conf.disconnect();
 
     ConnectLive.signOut();
-
+    window.localStorage.removeItem("isRoomFullState");
     navigate("/");
     setConnectingMsg("입장하기");
     setOpenModal(true);
