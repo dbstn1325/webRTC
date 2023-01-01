@@ -31,6 +31,7 @@ import { RoomIdState } from "../recoil/roomIdState";
 import { SpeakerDeviceId } from "../recoil/speakerDevice";
 import RemoteVideo from "../components/molecules/video/RemoteVideo";
 import { ParticipantState } from "../recoil/participants";
+import { RoomParticipantsState } from "../recoil/roomParticipants";
 
 const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const navigate = useNavigate();
@@ -59,6 +60,9 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
   const [activeMic] = useRecoilState(MicDeviceActive);
   const [activeCamera] = useRecoilState(CameraDeviceActive);
 
+  const [roomParticipatans, setRoomParticipatans] = useRecoilState<any>(
+    RoomParticipantsState
+  );
   /*
     카메라 또는 마이크 ID를
     확인하는 상태 변수
@@ -180,6 +184,11 @@ const Room = ({ roomId, setConnect, isCenter }: RoomProps) => {
          */
         _conf.on("participantEntered", (evt) => {
           console.log("-=-=");
+          setRoomParticipatans({
+            roomId: roomId,
+            isFull: true,
+          });
+
           setRemoteParticipants((oldRemoteParticipants) => [
             ...oldRemoteParticipants,
             evt.remoteParticipant,
