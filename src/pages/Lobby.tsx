@@ -38,7 +38,6 @@ import { MicDeviceActive } from "../recoil/micDeviceActive";
 import microphoneOnOff from "../utils/mic_on_off";
 import cameraOnOff from "../utils/camera_on_off";
 
-
 const Lobby = () => {
   const location = useLocation();
 
