@@ -80,16 +80,28 @@ const Lobby = () => {
   const [localAudio, setLocalAudio] = useRecoilState<any>(LocalAudio);
   const [isConnect, setIsConnect] = useRecoilState(ConnectState);
 
-  /** */
+  /**
+   * 랜덤 넘버의 방 제목 생성
+   */
   const [roomId, setRoomId] = useState<string>(
     Math.random().toString(16).substring(2, 12)
   );
+
+  /**
+   * 접속한 페이지가 호스트 페이지인지, 참여자 페이지인지
+   */
   const [isHost, setIsHost] = useState(false);
 
+  /**
+   * 룸에 참여한 참가자들을 나타내는 변수
+   */
   const [roomParticipatans, setRoomParticipatans] = useRecoilState<any>(
     RoomParticipantsState
   );
 
+  /**
+   * 경로(호스트 or 참가자)별 동작을 설정
+   */
   useEffect(() => {
     if (location.pathname === "/host") {
       setIsHost(true);
