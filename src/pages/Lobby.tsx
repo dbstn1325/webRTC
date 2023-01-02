@@ -91,10 +91,6 @@ const Lobby = () => {
   );
 
   useEffect(() => {
-    // setRoomParticipatans((a: any) => ({
-    //   ...a,
-    // }));
-
     if (location.pathname === "/host") {
       setIsHost(true);
       setConnectingMsg("방 생성하기");
@@ -160,14 +156,14 @@ const Lobby = () => {
       /*
         새로운 방을 만들 경우 실행된다
       */
-      console.log("aaa", recoil_data.RoomParticipantsState.isFull);
+
       if (
         roomId !== "" ||
         (roomId !== recoil_data.RoomParticipantsState.roomId &&
           recoil_data.RoomParticipantsState.isFull === true)
       ) {
         // setIsRoomFull(false);
-        setRoomParticipatans((a: any) => ({
+        setRoomParticipatans(() => ({
           roomId: roomId,
           isFull: false,
         }));
@@ -191,7 +187,7 @@ const Lobby = () => {
     방 생성 진행 과정을 계산하고, 해당 접속 정보를 통해
     Room에 연결을 한다.
     */
-    console.log("-----", _conf.remoteParticipants);
+
     _conf.on("connecting", async (event) => {
       const progress = Math.floor(event.progress);
 
@@ -217,19 +213,16 @@ const Lobby = () => {
      * 방에 나 혼자 있는지, 다른 사람들이 같이 있는지 계산
      */
     _conf.on("connected", async (event) => {
-      console.log("qqqqq", event.remoteParticipants.length);
-
-      console.log(roomId);
-      setRoomParticipatans((a: any) => ({
-        ...a,
+      setRoomParticipatans((roomParticipant: any) => ({
+        ...roomParticipant,
         roomId: roomId,
         // isFull: isRoomFull,
         isFull: false,
       }));
 
       if (event.remoteParticipants.length >= 1) {
-        setRoomParticipatans((a: any) => ({
-          ...a,
+        setRoomParticipatans((roomParticipant: any) => ({
+          ...roomParticipant,
           roomId: roomId,
           isFull: true,
         }));
@@ -266,8 +259,8 @@ const Lobby = () => {
     setIsConnect(false);
     conf.disconnect();
 
-    setRoomParticipatans((a: any) => ({
-      ...a,
+    setRoomParticipatans((roomParticipant: any) => ({
+      ...roomParticipant,
       roomId: roomId,
       isFull: false,
     }));
