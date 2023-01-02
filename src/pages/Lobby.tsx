@@ -306,6 +306,7 @@ const Lobby = () => {
         <LocalVideo localMedia={localMedia!} activeCamera={activeCamera} />
       )}
       <TodayContainer>
+
         <TodayInputBox
           title="방 번호"
           height={2}
